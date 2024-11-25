@@ -842,28 +842,31 @@ function username_details(){
 		});
 	}
 
-function booktitle_editing(title){
+// deprecated
+function style_headline(headline){
+	console.log("fn style_headline is deprecated");
+
 	account_status().then(function(r){
 		if(r["Values"]["vip"]==1){
-			alertify.set({labels: {ok: '<i class="fas fa-check-circle"></i> '+_h("a-name-2"), cancel: _h("a-no")}, buttonReverse: false});
-			alertify.prompt('<i class="fal fa-book"></i> '+_h("a-name-1"), function(e, title){
+			alertify.set({labels: {ok: '<i class="fas fa-check-circle"></i> '+_h("e-headline-2"), cancel: _h("e-no-1")}, buttonReverse: false});
+			alertify.prompt('<i class="fal fa-book"></i> '+_h("e-headline-1"), function(e, headline){
 				if(e){
-					title = (title || "").trim();
+					headline = (headline || "").trim();
 
-					if(title.length>0){
+					if(headline.length>0){
 						hj_update({
 							action: "profile_update", 
-							field: "book_title", 
-							data: title
+							field: "book_headline", 
+							data: headline
 						}).then(function(r){
 							switch(r["Status"]){
 								case 1:
-									$("#hj_booktitle").text(title).attr({title: title});
-									alertify.success('<i class="fal fa-book"></i> '+_h("a-name-3", {$title: title}));
+									$("#hj_headline").text(headline).attr({title: headline});
+									alertify.success('<i class="fal fa-book"></i> '+_h("e-headline-3", {$headline: headline}));
 
-									ga_evt_push("Book Title", {
+									ga_evt_push("Book Headline", {
 										event_category: "Profile Update", 
-										event_label: "Book Title"
+										event_label: "Book Headline"
 									});
 								break;
 
@@ -880,17 +883,17 @@ function booktitle_editing(title){
 						});
 					}
 				}
-			}, (title || "Dear Diary").toString() );
+			}, (headline || "Dear Diary").toString() );
 
 			alertify_input_custom({
-				placeholder: "eg. "+_h("a-name-4"), 
+				placeholder: "eg. "+_h("e-headline-4"), 
 				maxlength: 40
 			}, {
 				"letter-spacing": "2px"
 			});
 		}
 		else{
-			vip_only(_h("a-name-0"));
+			vip_only(_h("e-headline-0"));
 		}
 	});
 }

@@ -574,6 +574,10 @@ function vip_fn(f){
 			case "screenshot":
 				hj_screenshot();
 			break;
+
+			case "headline":
+				style_headline();
+			break;
 		}
 	}
 	else{
