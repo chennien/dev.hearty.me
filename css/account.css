@@ -305,10 +305,11 @@ label[title]::after{
 	content: attr(title);
 }
 
-#hj_booktitle{
+/* deprecated */
+#hj_headline{
 	white-space: pre-line;
 }
-	#hj_booktitle[data-empty]:empty::after{
+	#hj_headline[data-empty]:empty::after{
 		content: attr(data-empty);
 		letter-spacing: 1px;
 	}
