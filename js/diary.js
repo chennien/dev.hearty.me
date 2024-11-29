@@ -616,7 +616,7 @@ function hj_rmenu_toggle(e, o, $l){
 function datepicker_init(){
 	$("<link>", {
 		rel: "stylesheet", 
-		href: hj_jsdelivr()+"css/jquery.ui.datepicker.custom.min.css"
+		href: hj_jsdelivr()+"css/datepicker/jquery.ui.datepicker.custom.min.css"
 	}).appendTo("head");
 
 	if(/zh/i.test(hj_lang())){
