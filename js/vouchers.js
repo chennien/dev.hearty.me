@@ -252,16 +252,15 @@ function count_vouchers(get_months){ // get_months = 回溯月份數
 				$t.append($tb);
 
 				msg('<h3><i class="fal fa-chart-bar"></i> 我近期取得的序號張數<h3>'+$t.get(0).outerHTML);
-				bd_loading(false);
 			break;
 
 			default:
 				msg();
-				bd_loading(false);
 			break;
 		}
 	}).fail(function(){
 		msg();
+	}).always(function(){
 		bd_loading(false);
 	});
 }
@@ -375,7 +374,8 @@ function check_eml(eml, $e){
 		}).then(function(r){
 			// eg. test@mailinator.com
 			if((r["status"]||0)==429){ // Rate limit exceeded
-				console.warn("usercheck.com | Rate limit exceeded"); 
+				console.warn("usercheck.com | Rate limit exceeded");
+				resolve(true);
 			}
 			else if((r["status"]||0)==400){
 				msg('<i class="fal fa-times"></i> Email 格式不符：'+eml);
@@ -392,8 +392,10 @@ function check_eml(eml, $e){
 				collect_eml($e, "");
 				resolve(false);
 			}
-			resolve(true);
-		}).catch(function(){
+			else{
+				resolve(true);
+			}
+		}).fail(function(){
 			resolve(true);
 		}).always(function(){
 			bd_loading(false);
@@ -420,17 +422,23 @@ function collect_eml($e, email){
 			if(e){
 				new_email = (new_email||"").trim();
 
+				if(new_email.length<5 || new_email.indexOf("@")<1){
+					msg('<i class="fal fa-times"></i> Email 格式不符');
+					collect_eml($e, new_email); 
+					alertify_input_shake();
+					return;
+				}
+
 				// Email檢查
-				check_eml(new_email, $e).then(function(r){
-					if(!r) return;
+				check_eml(new_email, $e).then(function(res){
+					if(!res) return;
 
 					if(prev_email==new_email){ // prev_email 已經檢查為有效 Email
 						eml_composer(true, voucher, new_email, timer);
 					}
-					else if(new_email.length>5){
-						eml_composer(true, voucher, new_email, timer);
-
+					else{
 						bd_loading(true);
+
 						bd_update({
 							action: "voucher_eml", 
 							voucher: voucher, 
@@ -438,9 +446,8 @@ function collect_eml($e, email){
 						}).then(function(r){
 							switch(r["Status"]){
 								case 1:
+									eml_composer(true, voucher, new_email, timer);
 									$e.attr({title: new_email});
-									bd_loading(false);
-									return;
 								break;
 
 								case 3:
@@ -457,20 +464,16 @@ function collect_eml($e, email){
 									msg();
 								break;
 							}
-							eml_composer(false);
-							bd_loading(false);
+
+							// ### debug
+							console.log("* "+JSON.stringify(r));
+							// ### debug
 						}).fail(function(){
 							msg();
-							eml_composer(false);
+						}).always(function(){
 							bd_loading(false);
 						});
 					}
-					else{
-						alertify_input_shake();
-						collect_eml("");
-						bd_loading(false);
-					}
-
 				});
 			}
 		}, email);
@@ -618,9 +621,9 @@ function collect_eml($e, email){
 							msg('<i class="fal fa-info-circle"></i> 抱歉，似乎遇到一些問題：'+JSON.stringify(r["Values"]));
 						break;
 					}
-					bd_loading(false);
 				}).fail(function(){
 					msg();
+				}).always(function(){
 					bd_loading(false);
 				});
 			}
