@@ -464,10 +464,6 @@ function collect_eml($e, email){
 									msg();
 								break;
 							}
-
-							// ### debug
-							console.log("* "+JSON.stringify(r));
-							// ### debug
 						}).fail(function(){
 							msg();
 						}).always(function(){
@@ -886,11 +882,11 @@ function hj_tinymce_init(){
 	function linkify(s){
 		return (s || "")
 
-		// starts with http(s)://, ftp://
-		.replace(/\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim, '<a target="_blank" href="$&">$&</a>')
+		// starts with http(s)://
+		.replace(/\b(?:https?):\/\/[\w\p{L}\p{N}\-+&@#\/%?=~_|!:,.;]*[\w\p{L}\p{N}\-+&@#\/%=~_|]/gimu, '<a target="_blank" href="$&">$&</a>')
 
 		// starts with "www."
-		.replace(/(^|[^\/])(www\.[\S]+(\b|$))/gim, '$1<a target="_blank" href="https://$2">$2</a>');
+		.replace(/(^|[^\/])(www\.[\w\p{L}\p{N}\-+&@#\/%?=~_|!:,.;]*)(?=$|[^a-zA-Z\p{L}\p{N}\-+&@#\/%?=~_|!:,.;])/gimu, '$1<a target="_blank" href="https://$2">$2</a>')
 	}
 
 function bd_export(){
