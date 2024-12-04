@@ -633,8 +633,9 @@ function datepicker_init(){
 		var $d = $(".post_attr #post_created"), 
 			yr = new Date().getFullYear();
 
+		// datepicker 需使用 onchange觸發
 		return $d.attr({
-			type: "text", 
+			type: "text"
 		}).datepicker({
 			changeYear: true, 
 			changeMonth: true, 
@@ -5374,21 +5375,21 @@ function price_selector(pkg_id){
 	}
 }
 
-// 僅台灣儲值用藍新，其他用 TP
-function hj_purchase2(d){
+// 藍新為主
+// 僅國外儲值用 TP，其他用藍新
+function hj_purchase_nptp(d){
 	if(d==null) return false;
 
-	// 台灣儲值
-	// 藍新 (信用卡單筆 | ATM | 超商)
-	if(d["cc"]=="TW" && d["recurring"]==0){
-		hj_href("shop/np.buy?"+$.param(d));
-	}
-	// 台灣訂閱+國外全方案
+	// 國外儲值
 	// TapPay (信用卡單筆/訂閱 | AP | GP | 支付寶)
-	else{
+	if(d["cc"]!="TW" && d["recurring"]==0){
 		hj_href("shop/tp.buy?"+$.param(d));
 	}
-
+	// 台灣全方案+國外訂閱
+	// 藍新 (信用卡單筆 | ATM | 超商)
+	else{
+		hj_href("shop/np.buy?"+$.param(d));
+	}
 
 	var pkg_id = d["pkg"], 
 		pkg = pkg_info(pkg_id);
@@ -5415,6 +5416,47 @@ function hj_purchase2(d){
 		currency: "TWD"
 	});
 }
+	// TP 為主
+	// 僅台灣儲值用藍新，其他用 TP
+	function hj_purchase_tpnp(d){
+		if(d==null) return false;
+
+		// 台灣儲值
+		// 藍新 (信用卡單筆 | ATM | 超商)
+		if(d["cc"]=="TW" && d["recurring"]==0){
+			hj_href("shop/np.buy?"+$.param(d));
+		}
+		// 台灣訂閱+國外全方案
+		// TapPay (信用卡單筆/訂閱 | AP | GP | 支付寶)
+		else{
+			hj_href("shop/tp.buy?"+$.param(d));
+		}
+
+		var pkg_id = d["pkg"], 
+			pkg = pkg_info(pkg_id);
+
+		ga_evt_push("add_to_cart", {
+			items: [{
+				item_id: pkg_id, 
+				item_name: "VIP Premium", 
+				item_list_name: "pricing", 
+				item_variant: (d["recurring"]==0 ? "Prepaid" : "Monthly")+" Plan", 
+				quantity: pkg["quantity"], 
+				price: pkg["unit"]
+			}]
+		});
+		fb_evt_push("AddToCart", {
+			content_type: "product", 
+			content_name: "VIP Premium", 
+			contents: [{
+				id: pkg_id, 
+				quantity: pkg["quantity"]
+			}], 
+			value: pkg["subtotal"], 
+			num_items: 1, 
+			currency: "TWD"
+		});
+	}
 	// 2025 方案 (綁卡實名制後)
 	function hj_purchase(d){
 		if(d==null) return false;
@@ -5425,7 +5467,8 @@ function hj_purchase2(d){
 		){
 			hj_href("shop/np.buy?"+$.param(d));
 		}
-		else{ // 海外儲值 (信用卡 | AP | GP | 支付寶) + 台灣訂閱 (僅信用卡 + 實名認證)
+		// 海外儲值 (信用卡 | AP | GP | 支付寶) + 台灣訂閱 (僅信用卡 + 實名認證)
+		else{
 			hj_href("shop/tp.buy?"+$.param(d));
 		}
 
