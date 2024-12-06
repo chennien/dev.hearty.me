@@ -3026,18 +3026,22 @@ diary.pagination.min.css
 		backdrop-filter: blur(30px) brightness(1.05);
 		z-index: 0; /* cssgram fix */
 	}
-		/* 
+		/*
 			Android Bug Fixed: 
 			backdrop-filter is incompatible with some Android devices
 			https://youtu.be/MdzM51JnyD8
 		*/
-		@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) and (pointer: coarse){
-			.bk-page figure::before{
-				background: rgba(255,255,255,.8);
-				-webkit-backdrop-filter: none;
-				backdrop-filter: none;
+		/* target: Android devices */
+		@supports not (-webkit-touch-callout: none){ /* not iOS */
+			@media (pointer: coarse){ /* touch screen only */
+				.bk-page figure::before{
+					background: rgba(255,255,255,.8);
+					-webkit-backdrop-filter: none;
+					backdrop-filter: none;
+				}
 			}
 		}
+
 		/* Firefox Bug Fixed: Not Support backdrop-filter
 			caniuse.com/#search=backdrop-filter
 		@supports (-moz-appearance: none){
