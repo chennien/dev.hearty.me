@@ -3031,7 +3031,7 @@ diary.pagination.min.css
 			backdrop-filter is incompatible with some Android devices
 			https://youtu.be/MdzM51JnyD8
 		*/
-		@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm){
+		@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) and (pointer: coarse){
 			.bk-page figure::before{
 				background: rgba(255,255,255,.8);
 				-webkit-backdrop-filter: none;
