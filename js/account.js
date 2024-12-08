@@ -1074,8 +1074,8 @@ function signin_history(){
 }
 
 function voucher_redeem(voucher){
-	let voucher = voucher || getcookie("hearty_voucher") || "", 
-		evt = "Voucher Redeem";
+	voucher = voucher || getcookie("hearty_voucher") || "";
+	let evt = "Voucher Redeem";	
 
 	alertify.set({labels: {ok: '<i class="fas fa-check-circle"></i> '+_h("a-redeem-1"), cancel: _h("a-no")}, buttonReverse: false});
 	alertify.prompt('<i class="far fa-gift-card"></i> '+_h("a-redeem-0"), function(e, voucher){
