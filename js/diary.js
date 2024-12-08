@@ -551,7 +551,7 @@ function vip_init(){
 	return isVIP;
 }
 
-function vip_fn(f){
+function vip_fn(f, param){
 	var c = current_post();
 	if(c["vip"]){
 		switch(f){
@@ -578,9 +578,24 @@ function vip_fn(f){
 			case "headline":
 				style_headline();
 			break;
+
+			case "cover":
+				$("#cover_upload").click();
+			break;
+
+			case "bg":
+				$("#bg_upload").click();
+			break;
+
+			case "color":
+				style_color(param);
+			break;
 		}
 	}
 	else{
+		// 先關掉當前 popup
+		if(["headline", "cover", "bg", "color"].indexOf(f)>=0) popup_toggle(false, "style");
+
 		hj_upgrade_toggle(true);
 	}
 	return c["vip"];
