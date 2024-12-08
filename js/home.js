@@ -52,18 +52,13 @@ var btn_alias = "home";
 
 		let $txt = $(".alice_inner textarea").on("input", function(){
 			let $t = $(this), 
-				$c = $(".char_max");
+				$c = $(".alice_inner .comment");
 
 			// 中文輸入法還沒選字時，就會被算入字數，導致無法選字或截斷
 			// 故 JS限為 85字，maxlength 則設為 88字
-			if($t.val().length>=85){
-				$t.addClass("invalid"); $c.show();
-			}
-			else{
-				$t.removeClass("invalid"); $c.hide();
-			}
+			if($t.val().length>=85) $c.addClass("invalid");
+			else $c.removeClass("invalid");
 		}).autogrow(); // stackoverflow.com/a/2948256
-		$(".char_max").hide();
 
 		if(!user_verify()){
 			$txt.on("click", function(){
