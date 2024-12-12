@@ -93,6 +93,9 @@ function URL_handling(){
 	// Add Images
 	else if(!!getUrlPara("img")) post_create().then(function(){post_picture(true);});
 
+	// Add Images
+	else if(!!getUrlPara("style")) style_change();
+
 	/* 子 WebView 開連結
 	var l = getUrlPara("link");
 	if(!!l) location.href = "//"+l+(l.indexOf("?")>0 ? "&":"?")+"wvtab=1";
@@ -3587,7 +3590,7 @@ function sticker__list(set_num, set_alias){
 									"data-src": set["alias"]+"/"+set["cover"]+".png"
 								}).add($("<h5>", {
 									text: set["name"], 
-									"data-new": +(set_num>101||[85].indexOf(set_num)>=0)
+									"data-new": +(set_num>122||[82,103].indexOf(set_num)>=0)
 								})), 
 							"data-sticker": 0
 						})
@@ -5390,47 +5393,50 @@ function price_selector(pkg_id){
 	}
 }
 
-// 藍新為主
-// 僅國外儲值用 TP，其他用藍新
-function hj_purchase_nptp(d){
-	if(d==null) return false;
-
-	// 國外儲值
-	// TapPay (信用卡單筆/訂閱 | AP | GP | 支付寶)
-	if(d["cc"]!="TW" && d["recurring"]==0){
-		hj_href("shop/tp.buy?"+$.param(d));
-	}
-	// 台灣全方案+國外訂閱
-	// 藍新 (信用卡單筆 | ATM | 超商)
-	else{
-		hj_href("shop/np.buy?"+$.param(d));
-	}
-
-	var pkg_id = d["pkg"], 
-		pkg = pkg_info(pkg_id);
-
-	ga_evt_push("add_to_cart", {
-		items: [{
-			item_id: pkg_id, 
-			item_name: "VIP Premium", 
-			item_list_name: "pricing", 
-			item_variant: (d["recurring"]==0 ? "Prepaid" : "Monthly")+" Plan", 
-			quantity: pkg["quantity"], 
-			price: pkg["unit"]
-		}]
-	});
-	fb_evt_push("AddToCart", {
-		content_type: "product", 
-		content_name: "VIP Premium", 
-		contents: [{
-			id: pkg_id, 
-			quantity: pkg["quantity"]
-		}], 
-		value: pkg["subtotal"], 
-		num_items: 1, 
-		currency: "TWD"
-	});
+function hj_purchase(d){
+	hj_purchase_nptp(d); // 藍新為主
 }
+	// 藍新為主
+	// 僅國外儲值用 TP，其他用藍新
+	function hj_purchase_nptp(d){
+		if(d==null) return false;
+
+		// 國外儲值
+		// TapPay (信用卡單筆/訂閱 | AP | GP | 支付寶)
+		if(d["cc"]!="TW" && d["recurring"]==0){
+			hj_href("shop/tp.buy?"+$.param(d));
+		}
+		// 台灣全方案+國外訂閱
+		// 藍新 (信用卡單筆 | ATM | 超商)
+		else{
+			hj_href("shop/np.buy?"+$.param(d));
+		}
+
+		let pkg_id = d["pkg"], 
+			pkg = pkg_info(pkg_id);
+
+		ga_evt_push("add_to_cart", {
+			items: [{
+				item_id: pkg_id, 
+				item_name: "VIP Premium", 
+				item_list_name: "pricing", 
+				item_variant: (d["recurring"]==0 ? "Prepaid" : "Monthly")+" Plan", 
+				quantity: pkg["quantity"], 
+				price: pkg["unit"]
+			}]
+		});
+		fb_evt_push("AddToCart", {
+			content_type: "product", 
+			content_name: "VIP Premium", 
+			contents: [{
+				id: pkg_id, 
+				quantity: pkg["quantity"]
+			}], 
+			value: pkg["subtotal"], 
+			num_items: 1, 
+			currency: "TWD"
+		});
+	}
 	// TP 為主
 	// 僅台灣儲值用藍新，其他用 TP
 	function hj_purchase_tpnp(d){
@@ -5447,47 +5453,7 @@ function hj_purchase_nptp(d){
 			hj_href("shop/tp.buy?"+$.param(d));
 		}
 
-		var pkg_id = d["pkg"], 
-			pkg = pkg_info(pkg_id);
-
-		ga_evt_push("add_to_cart", {
-			items: [{
-				item_id: pkg_id, 
-				item_name: "VIP Premium", 
-				item_list_name: "pricing", 
-				item_variant: (d["recurring"]==0 ? "Prepaid" : "Monthly")+" Plan", 
-				quantity: pkg["quantity"], 
-				price: pkg["unit"]
-			}]
-		});
-		fb_evt_push("AddToCart", {
-			content_type: "product", 
-			content_name: "VIP Premium", 
-			contents: [{
-				id: pkg_id, 
-				quantity: pkg["quantity"]
-			}], 
-			value: pkg["subtotal"], 
-			num_items: 1, 
-			currency: "TWD"
-		});
-	}
-	// 2025 方案 (綁卡實名制後)
-	function hj_purchase(d){
-		if(d==null) return false;
-
-		if(
-			(d["recurring"]==0 && d["cc"]=="TW") || // 台灣儲值 (信用卡 | ATM | 超商)
-			(d["recurring"]==1 && d["cc"]!="TW") // 海外訂閱 (僅信用卡)
-		){
-			hj_href("shop/np.buy?"+$.param(d));
-		}
-		// 海外儲值 (信用卡 | AP | GP | 支付寶) + 台灣訂閱 (僅信用卡 + 實名認證)
-		else{
-			hj_href("shop/tp.buy?"+$.param(d));
-		}
-
-		var pkg_id = d["pkg"], 
+		let pkg_id = d["pkg"], 
 			pkg = pkg_info(pkg_id);
 
 		ga_evt_push("add_to_cart", {
@@ -5513,7 +5479,7 @@ function hj_purchase_nptp(d){
 		});
 	}
 
-	// 藍新購買 (已停用)
+	// 藍新 (已停用)
 	function hj_purchase_np(d){
 		if(d==null) return false;
 
@@ -5530,7 +5496,7 @@ function hj_purchase_nptp(d){
 			hj_href("shop/np.buy?"+$.param(d));
 		}
 
-		var pkg_id = d["pkg"], 
+		let pkg_id = d["pkg"], 
 			pkg = pkg_info(pkg_id);
 		ga_evt_push("add_to_cart", {
 			items: [{
