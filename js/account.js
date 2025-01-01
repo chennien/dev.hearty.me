@@ -1107,6 +1107,62 @@ function voucher_redeem(voucher){
 				});
 				ga_evt_push(evt);
 			}
+			// 2025/4/1 前可兌換全站序號
+			else if(/newyear/i.test(voucher) && parseInt(today(8).replace(/-/g,""))<20250401){
+				$.ajax({
+					url: "/bd/api.php", 
+					type: "POST", 
+					dataType: "json", 
+					data: {
+						action: "use_global_voucher", 
+						voucher: "newyear"
+					}, 
+					async: true
+				}).then(function(r){
+					switch(r["Status"]){
+						case 1:
+							let v = r["Values"]||"", 
+								voucher_new = v["voucher"]||"";
+
+							$.ajax({
+								url: "/gift/"+voucher_new, 
+								type: "POST", 
+								dataType: "json", 
+								data: {
+									voucher: voucher_new
+								}, 
+								async: true
+							}).then(function(r){
+								if(r["Status"]==1){
+									msg('<i class="far fa-gift"></i> '+_h("a-voucher_ok", {
+										$code: voucher, 
+										$days: v["dur"]||0, 
+										$exp: new Date(v["exp"]||"").toLocaleDateString()
+									})+' <i class="far fa-check-circle"></i>', '<i class="fas fa-thumbs-up"></i> '+_h("a-ok-0"), function(){
+
+										location.href = location.origin+"/account?tab=1";
+									});
+								}
+								else{
+									msg();
+								}
+							}).fail(function(){
+								msg();
+							});
+						break;
+
+						case 3:
+							msg('<i class="fal fa-info-circle"></i> '+_h("a-voucher_disqualified"), _h("a-ok-0"));
+						break;
+
+						default:
+							msg();
+						break;
+					}
+				}).fail(function(){
+					msg();
+				});
+			}
 			else{
 				$.ajax({
 					url: "/gift/"+voucher, 
