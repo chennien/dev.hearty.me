@@ -1109,6 +1109,8 @@ function voucher_redeem(voucher){
 			}
 			// 2025/4/1 前可兌換全站序號
 			else if(/newyear/i.test(voucher) && parseInt(today(8).replace(/-/g,""))<20250401){
+				hj_loading(true);
+
 				$.ajax({
 					url: "/bd/api.php", 
 					type: "POST", 
@@ -1150,6 +1152,8 @@ function voucher_redeem(voucher){
 								}
 							}).fail(function(){
 								msg();
+							}).always(function(){
+								hj_loading(false);
 							});
 						break;
 
@@ -1163,9 +1167,13 @@ function voucher_redeem(voucher){
 					}
 				}).fail(function(){
 					msg();
+				}).always(function(){
+					hj_loading(false);
 				});
 			}
 			else{
+				hj_loading(true);
+
 				$.ajax({
 					url: "/gift/"+voucher, 
 					type: "POST", 
@@ -1207,6 +1215,8 @@ function voucher_redeem(voucher){
 					}
 				}).fail(function(){
 					msg();
+				}).always(function(){
+					hj_loading(false);
 				});
 			}
 		}
