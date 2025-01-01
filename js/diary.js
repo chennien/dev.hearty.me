@@ -1397,7 +1397,7 @@ function period__initialize(){
 			// Date-picker bug on some Chrome 131, Windows
 			// https://i.hearty.app/j/6768f963d041c.gif
 			path: "js/periods.min.js", 
-			commit: "4e85f4253c87bb5ea0a02358df67b280ef0e1ac7" // commit: "main"
+			commit: "7f0107406a9d4a9ae5115823203aa820d822fada" // commit: "main"
 		}, function(){
 			$pd.slideDown("slow").data({loaded: true});
 		});

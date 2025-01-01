@@ -1134,6 +1134,8 @@ function voucher_redeem(voucher){
 								async: true
 							}).then(function(r){
 								if(r["Status"]==1){
+									let v = r["Values"]||"";
+
 									msg('<i class="far fa-gift"></i> '+_h("a-voucher_ok", {
 										$code: voucher, 
 										$days: v["dur"]||0, 
