@@ -1449,8 +1449,8 @@ a:active{
 	.popup.notice_checkin [data-shaking]{
 		animation: shake-slow 5s ease-in-out infinite;
 	}
-		.popup.notice_checkin [title][data-point][data-unit]::after{
-			content: attr(title) " " attr(data-point) " " attr(data-unit);
+		.popup.notice_checkin [title][data-points][data-unit]::after{
+			content: attr(title) " " attr(data-points) " " attr(data-unit);
 		}
 
 /* Rating */
@@ -1730,7 +1730,6 @@ a:active{
 	.popup.feedback .notice:hover, 
 	.popup .btns_action li:hover, 
 	.screenlock .cancel:hover{
-		-webkit-filter: brightness(1.2);
 		filter: brightness(1.2);
 	}
 	.purchase .price_selector{
@@ -2882,7 +2881,7 @@ diary.pagination.min.css
 	transform: translateX(-50%);
 	padding: 0 1em;
 	background: rgba(255,255,255,.85);
-	background: linear-gradient(to bottom, rgba(255,255,255,.6) 0%,rgba(255,255,255,.9) 100%);
+	background: linear-gradient(to bottom, rgba(255,255,255,.6), rgba(255,255,255,.9));
 	box-shadow: 1px 1px 6px 2px rgba(204,204,204,.8);
 	border-radius: .6em .6em 0 0;
 	z-index: 2;
