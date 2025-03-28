@@ -1090,7 +1090,7 @@ function voucher_redeem(voucher){
 				});
 			}
 			// EC開頭，為療癒商城購物金序號
-			else if(voucher.toLowerCase().startsWith("ec")){
+			else if(voucher.toUpperCase().startsWith("EC-")){
 				alertify.set({labels: {ok: '<i class="fas fa-shopping-cart"></i> '+_h("a-voucher_ec-1"), cancel: _h("a-back")}, buttonReverse: false});
 				alertify.confirm('<i class="fal fa-info-circle"></i> '+_h("a-voucher_ec-0"), function(e){
 					if(e) location.href = "/life";
