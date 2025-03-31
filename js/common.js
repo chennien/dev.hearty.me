@@ -951,8 +951,8 @@ function get_app(os, cp){
 		break;
 
 		case "Macintosh":
-			// 3.1.0 (Browser-Opener, Swift)
-			hj_getFile("cdn.jsdelivr.net/gh/chennien/d.hearty.app@0/mac/browser-opener/Hearty%20Journal.dmg", fname+".dmg");
+			// 3.1.1 (Browser-Opener, Swift)
+			hj_getFile("cdn.jsdelivr.net/gh/chennien/d.hearty.app@1/mac/browser-opener/Hearty%20Journal.dmg", fname+".dmg");
 
 			// 2.0.1 (WKWebview-Legacy, Swift)
 			// hj_getFile("cdn.jsdelivr.net/gh/chennien/d.hearty.app@0/mac/wkwebview-legacy/Hearty%20Journal_v2.0.1.dmg", fname+".dmg");
