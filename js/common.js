@@ -951,11 +951,11 @@ function get_app(os, cp){
 		break;
 
 		case "Macintosh":
-			// 3.0.0 (Apple Script)
-			hj_getFile("cdn.jsdelivr.net/gh/chennien/d.hearty.app@ad1f2cfc603204f589e98f762971c3c5197cfec2/mac/Hearty%20Journal.dmg", fname+".dmg");
+			// 3.1.0 (Browser-Opener, Swift)
+			hj_getFile("cdn.jsdelivr.net/gh/chennien/d.hearty.app@0/mac/browser-opener/Hearty%20Journal.dmg", fname+".dmg");
 
-			// 2.0.1 (WKWebView)
-			// hj_getFile("cdn.jsdelivr.net/gh/chennien/d.hearty.app@ad1f2cfc603204f589e98f762971c3c5197cfec2/mac/Hearty%20Journal_v2.0.1.dmg", fname+".dmg");
+			// 2.0.1 (WKWebview-Legacy, Swift)
+			// hj_getFile("cdn.jsdelivr.net/gh/chennien/d.hearty.app@0/mac/wkwebview-legacy/Hearty%20Journal_v2.0.1.dmg", fname+".dmg");
 
 			get_app_events("macOS", cp);
 		break;
