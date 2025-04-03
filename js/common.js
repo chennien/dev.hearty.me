@@ -459,7 +459,7 @@ function get_qrcode($qr, url, fn){
 	if("QRCode" in window){
 		let icon = "//i.hearty.app/b/images/qrcode.icon.png?o=1";
 
-		new QRCode($qr.html("").get(0), {
+		new QRCode($qr.empty().get(0), {
 			text: url || location.href.replace("//hearty.me", "//hearty.app"), 
 			width: 180, 
 			height: 180, 
@@ -928,34 +928,24 @@ function get_app(os, cp){
 		break;
 
 		case "Windows":
-			let ua = navigator.userAgent || "", 
-				browser = check_browser(), 
-				ver = "default", 
-				cpu = /(Win|WOW|x)64|ARM/i.test(ua)||!check_OS("Windows") ? "" : "/x86";
-
-			if(browser=="Chrome") ver = "chrome";
-			else if(ua.indexOf("Windows NT 1")>0||browser=="Edg") ver = "edge";
-
-			hj_getFile("d.hearty.app/win/"+ver+(
-					/zh/i.test(navigator.language||"") ? "" : "/2022" // Sectigo Codesigned
-				)+cpu+"/Hearty%20Journal.exe", fname+".exe", function(){
+			// 1.1.2 (Common: Chrome > Brave > Edge)
+			hj_getFile("d.hearty.app/win/common/Hearty%20Journal.exe", fname+".exe", function(){
 				msg('<img src="//i.hearty.app/AhGZgWy.png">');
 			});
-			/* TW  Codesigned
-			hj_getFile("d.hearty.app/win/"+ver+cpu+"/Hearty%20Journal.exe", fname+".exe", function(){
+
+			/* 
+			// 1.0.0 (Edge 2022)
+			hj_getFile("d.hearty.app/win/edge/Hearty%20Journal.exe", fname+".exe", function(){
 				msg('<img src="//i.hearty.app/AhGZgWy.png">');
 			});
 			*/
 
-			get_app_events(os+" ("+browser+")", cp);
+			get_app_events(os, cp);
 		break;
 
 		case "Macintosh":
 			// 3.1.1 (Browser-Opener, Swift)
 			hj_getFile("cdn.jsdelivr.net/gh/chennien/d.hearty.app@1/mac/browser-opener/Hearty%20Journal.dmg", fname+".dmg");
-
-			// 2.0.1 (WKWebview-Legacy, Swift)
-			// hj_getFile("cdn.jsdelivr.net/gh/chennien/d.hearty.app@0/mac/wkwebview-legacy/Hearty%20Journal_v2.0.1.dmg", fname+".dmg");
 
 			get_app_events("macOS", cp);
 		break;
