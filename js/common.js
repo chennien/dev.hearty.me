@@ -927,18 +927,16 @@ function get_app(os, cp){
 			get_app_events(os, cp);
 		break;
 
-		case "Windows":
-			// 1.1.2 (Common: Chrome > Brave > Edge)
-			hj_getFile("d.hearty.app/win/common/Hearty%20Journal.exe", fname+".exe", function(){
-				msg('<img src="//i.hearty.app/AhGZgWy.png">');
-			});
+		case "Windows":			
+			hj_getFile(
 
-			/* 
-			// 1.0.0 (Edge 2022)
-			hj_getFile("d.hearty.app/win/edge/Hearty%20Journal.exe", fname+".exe", function(){
-				msg('<img src="//i.hearty.app/AhGZgWy.png">');
+			check_browser("Edg") ? 
+				"d.hearty.app/win/edge/Hearty%20Journal.exe" : // 1.0.0 (Edge 2022)
+				"d.hearty.app/win/common/Hearty%20Journal.exe" // 1.1.2 (Common 2025: Chrome > Brave > Edge)
+
+				, fname+".exe", function(){
+					msg('<img src="//i.hearty.app/AhGZgWy.png">');
 			});
-			*/
 
 			get_app_events(os, cp);
 		break;
