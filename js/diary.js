@@ -4887,9 +4887,6 @@ function saved(s){
 }
 
 // 編輯主旨
-function title_editing(title){
-	title_edit(title);
-}
 function title_edit(title){
 	var post_id = current_post()["post_id"];
 	alertify.set({labels: {ok: "📝 "+_h("e-subject-3"), cancel: _h("e-no-1")}, buttonReverse: false});
@@ -6410,14 +6407,18 @@ function hj_daily_checkin(action){
 		break;
 
 		case "customized_notification":
-			if(/zh-tw/i.test(hj_lang())){
-				hj_update({
-					action: "hearty_points", 
-					query: "daily_checkin_already"
-				}).then(function(r){
-					if(r["Status"]<1) customized_notification("daily_checkin");
-				});
-			}
+			// 總是顯示
+			customized_notification("daily_checkin");
+
+			/*
+			// 還未簽到，才顯示通知
+			hj_update({
+				action: "hearty_points", 
+				query: "daily_checkin_already"
+			}).then(function(r){
+				if(r["Status"]<1) customized_notification("daily_checkin");
+			});
+			*/
 		break;
 
 		default:
