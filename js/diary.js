@@ -6432,15 +6432,18 @@ function hj_daily_checkin(action){
 			}).then(function(r){
 				switch(r["Status"]){
 					case 1:
-						var $p = $c.find("[data-points]"), p
+						var $p = $c.find("[data-points]"), 
 							p = parseInt($p.attr("data-points")||0)+1;
 						$p.attr("data-points", p);
 						$c.find("img").attr("data-shaking", 1);
 
 						msg('<i class="far fa-cookie"></i> '+_h("e-checkin-4", {$p: p}), '<i class="fas fa-hand-peace"></i> '+_h("e-ok-0"), function(){
 							popup_toggle(false, "notice_checkin");
-							$(".notifications li[data-notification_id='10']").remove();
 						});
+
+						$(".notifications li[data-notification_id='10']").html(
+							'<i class="far fa-mitten"></i>'+_h("e-n_daily_checkin-1")
+						);
 
 						// forms.gle/JxwFHhFaA8kbvjgH9
 						gform_post("1FAIpQLSd-_KtssDZ1EfNp07bfgdGguDrlfzSEAkEXrWujYDNr69L6iw", {
