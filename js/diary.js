@@ -6022,12 +6022,11 @@ function hj_screenshot(){
 	};
 	$e.removeAttr("data-screenshoted");
 
-	// 圖片透過 Statically CORS Proxy
+	// 圖片透過 CORS Proxy
 	$d.find("#youtube,.sticker_img").each(function(){
 		var i = $(this).css("background-image");
 		if(i.length>0) $(this).css("background-image", 
-			// ALT: i0.wp.com/
-			i.replace("//i.hearty.app", "//cdn.statically.io/img/i.hearty.app")
+			i.replace("//i.hearty.app", "//i0.wp.com/i.hearty.app")
 		);
 	});
 
@@ -6059,6 +6058,9 @@ function hj_screenshot(){
 
 			popup_toggle(true, "diary_screenshot");
 			hj_loading(false);
+
+			// PWA 不會提示已下載
+			if(check_hjpwa()) msg('<i class="fas fa-folder-download"></i> '+_h("e-picture-8"));
 
 			ga_evt_push("Screenshot", {
 				event_category: "Posts", 
@@ -6235,13 +6237,21 @@ function customized_notification(action, val){
 		break;
 
 		case "daily_checkin":
-			notifications_new([{
-				notification_id: 10, 
-				msg: _h("e-n_daily_checkin"), 
-				clk: "hj_daily_checkin('init')", 
-				unread: 0, 
-				icon: "far fa-mitten", 
-			}], false);
+			hj_update({
+				action: "hearty_points", 
+				query: "daily_checkin_already"
+			}).then(function(r){
+				r = r["Status"];
+				if(r<2){
+					notifications_new([{
+						notification_id: 10, 
+						msg: _h("e-n_daily_checkin-"+r), 
+						clk: "hj_daily_checkin('init')", 
+						unread: 0, 
+						icon: "far fa-mitten", 
+					}], false);					
+				}
+			});
 		break;
 	}
 }
@@ -6378,6 +6388,9 @@ function post_picture_download($a){
 		e.stopPropagation();
 	}).get(0).click();
 	alertify.success('<i class="far fa-arrow-alt-to-bottom"></i> '+_h("e-picture-7"));
+
+	// PWA 不會提示已下載
+	if(check_hjpwa()) msg('<i class="fas fa-folder-download"></i> '+_h("e-picture-8"));
 }
 
 // 每日簽到
@@ -6407,22 +6420,12 @@ function hj_daily_checkin(action){
 		break;
 
 		case "customized_notification":
-			// 總是顯示
 			customized_notification("daily_checkin");
-
-			/*
-			// 還未簽到，才顯示通知
-			hj_update({
-				action: "hearty_points", 
-				query: "daily_checkin_already"
-			}).then(function(r){
-				if(r["Status"]<1) customized_notification("daily_checkin");
-			});
-			*/
 		break;
 
 		default:
 			var $btn = $c.find(".btns_action");
+
 			hj_update({
 				action: "hearty_points", 
 				query: "daily_checkin"
