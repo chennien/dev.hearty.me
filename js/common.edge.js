@@ -927,7 +927,7 @@ function get_app(os, cp){
 			get_app_events(os, cp);
 		break;
 
-		case "Windows":			
+		case "Windows":
 			hj_getFile(
 
 			// Edge SmartScreen 會阻擋新版本
@@ -937,7 +937,7 @@ function get_app(os, cp){
 				"d.hearty.app/win/common/Hearty%20Journal.exe" // 1.1.3 (Common 2025: Chrome > Brave > Edge)
 
 				, fname+".exe", function(){
-					msg('<img src="//i.hearty.app/AhGZgWy.png">');
+					msg('<img src="//i0.wp.com/hearty.me/images/downloads.png" width="300">');
 			});
 
 			get_app_events(os, cp);
