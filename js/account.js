@@ -312,14 +312,10 @@ function uploader_init(){
 				}, 
 				success: function(r){
 					if(r["status"]==1){ // 1: 成功; 0: 錯誤
-						let img = "s3.ap-northeast-1.wasabisys.com/hearty-users/"+r["basenames"][0];
-						img = [
-							"//i0.wp.com/"+img, 
-							"//"+img
-						];
+						let img = "//i.hearty.app/u/"+r["basenames"][0];
 
-						$("#profile_image img").attr({src: img[0]});
-						$(".profile_image div").css({"background-image": 'url("'+img[0]+'"),url("'+img[1]+'")'});
+						$("#profile_image img").attr({src: img});
+						$(".profile_image div").css({"background-image": 'url('+img+')'});
 
 						picture_rotate();
 						alertify.success('<i class="far fa-address-card"></i> '+_h("a-avatar-3"));
@@ -946,7 +942,7 @@ function export_txt(txt){
 							event_label: "Posts Exported"
 						});
 
-						msg('<i class="fab fa-wpforms"></i> '+_h("a-dl_pwd-4"), _h("a-ok-1"));
+						msg('<i class="fas fa-folder-download"></i> '+_h("a-dl_pwd-4"), _h("a-ok-1"));
 					});
 				}
 

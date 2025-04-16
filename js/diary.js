@@ -1061,13 +1061,9 @@ function bg_uploader_init(){
 					success: function(r){
 						if(r["status"]==1){
 							let s = $(":root").get(0).style, 
-								img = "s3.ap-northeast-1.wasabisys.com/hearty-backgrounds/"+r["basenames"];
-							img = [
-								"//i0.wp.com/"+img, 
-								"//"+img
-							];
+								img = "//i.hearty.app/bg/"+r["basenames"];
 
-							s.setProperty("--book-bg", "url('"+img[0]+"'),url('"+img[1]+"')");
+							s.setProperty("--book-bg", "url('"+img+"')");
 							s.setProperty("--book-bg-size", "cover");
 							s.setProperty("--book-bg-repeat", "no-repeat");
 							alertify.success('<i class="fas fa-book-spells"></i> '+_h("e-bg-3"));
@@ -1182,13 +1178,8 @@ function cover_uploader_init(){
 					}, 
 					success: function(r){
 						if(r["status"]==1){
-							let img = "s3.ap-northeast-1.wasabisys.com/hearty-covers/"+r["basenames"];
-							img = [
-								"//i0.wp.com/"+img, 
-								"//"+img
-							];
-
-							s.setProperty("--book-cover", "url('"+img[0]+"'),url('"+img[1]+"')");
+							let img = "//i.hearty.app/c/"+r["basenames"];
+							s.setProperty("--book-cover", "url('"+img+"')");
 							alertify.success('<i class="fas fa-book-spells"></i> '+_h("e-cover-6"));
 						}
 						else{

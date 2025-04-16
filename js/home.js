@@ -257,7 +257,7 @@ function alice_greeting_read(greeting_id){
 				onclick: "profile_popup('"+c["username"]+"','"+c["nickname"]+"','"+profile_image+"','"+gender+"')", 
 				"data-vip": c["is_vip"] // $.inArray(c["username"], ["nien", "jianny"])<0 ? 0 : 1
 			}).css({
-				"background-image": "url(//i0.wp.com/s3.ap-northeast-1.wasabisys.com/hearty-users/"+profile_image+"?fit=320,320&strip=all)"
+				"background-image": "url(//i.hearty.app/u/"+profile_image+")"
 			}).add(
 				$("<div>", {
 					class: "opinion", 
@@ -489,7 +489,7 @@ function profile_popup(username, nickname, profile_image, gender){
 	}
 	else{
 		$p.find(".avatar").css({
-			"background-image": "url(//i0.wp.com/s3.ap-northeast-1.wasabisys.com/hearty-users/"+profile_image+"?fit=320,320&strip=all)"
+			"background-image": "url(//i.hearty.app/u/"+profile_image+")"
 		});
 		$p.find("[data-n]").attr({title: nickname, "data-gender": gender});
 		$p.find("[data-link]").attr({
