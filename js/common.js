@@ -928,8 +928,9 @@ function get_app(os, cp){
 		break;
 
 		case "Windows":
+			// 1.1.4 (Common 2025: Chrome > Brave > Edge)
 			hj_getFile(
-				"d.hearty.app/win/common/Hearty%20Journal.exe", fname+".exe", function(){
+				"d.hearty.app/win/Hearty%20Journal.exe", fname+".exe", function(){
 					msg(
 						check_browser("Edg") ? 
 						'<img src="//i0.wp.com/hearty.me/images/downloads.edge.webp">' : 
