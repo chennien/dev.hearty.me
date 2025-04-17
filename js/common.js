@@ -929,15 +929,12 @@ function get_app(os, cp){
 
 		case "Windows":
 			hj_getFile(
-
-			// Edge SmartScreen 會阻擋新版本
-			// 待下載次數多後，再給 Edge用戶
-			check_browser("Edg") ? 
-				"d.hearty.app/win/edge/tw/Hearty%20Journal.exe" : // 1.0.6 (Edge 2022)
-				"d.hearty.app/win/common/Hearty%20Journal.exe" // 1.1.3 (Common 2025: Chrome > Brave > Edge)
-
-				, fname+".exe", function(){
-					msg('<img src="//i0.wp.com/hearty.me/images/downloads.png" width="300">');
+				"d.hearty.app/win/common/Hearty%20Journal.exe", fname+".exe", function(){
+					msg(
+						check_browser("Edg") ? 
+						'<img src="//i0.wp.com/hearty.me/images/downloads.edge.webp">' : 
+						'<img src="//i0.wp.com/hearty.me/images/downloads.png" width="300">'
+					);
 			});
 
 			get_app_events(os, cp);
