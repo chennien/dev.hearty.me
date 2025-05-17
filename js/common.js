@@ -394,7 +394,7 @@ function url_shortener(path, is_short, title, img, desc){
 		dataType: "json", 
 		data: JSON.stringify({
 			suffix: {option: is_short ? "SHORT" : "UNGUESSABLE"}, 
-			longDynamicLink: "https://app.hj.rs/?link="+host+"wv?p%3D"+uri+"&apn=com.hearty.me&amv=60&afl="+url+"&ibi=com.hearty.me&isi=1423459636&ifl="+url+"&st="+title+"&sd="+desc+"&si="+img+"&at=1010lPJU&ct=hj.rs&mt=8&pt=119194312&ofl="+url+"&"+utm
+			longDynamicLink: "https://app.hj.rs/?link="+host+"wv?p%3D"+uri+"&apn=com.hearty.me&amv=68&afl="+url+"&ibi=com.hearty.me&isi=1423459636&ifl="+url+"&st="+title+"&sd="+desc+"&si="+img+"&at=1010lPJU&ct=hj.rs&mt=8&pt=119194312&ofl="+url+"&"+utm
 		})
 	}).then(function(j){
 		if("shortLink" in j){
@@ -429,27 +429,6 @@ function url_shortener(path, is_short, title, img, desc){
 			return false;
 		}
 	});
-
-	/* ALT:
-	if("fetch" in window){
-		return fetch("//hj.rs/_/get", {
-			method: "POST", 
-			mode: "cors", 
-			cache: "no-cache", 
-			headers: {Accept: "application/json"}, 
-			body: JSON.stringify({
-				suffix: {option: is_short ? "SHORT" : "UNGUESSABLE"}, 
-				longDynamicLink: "https://app.hj.rs/?link=https://hearty.me/wv?p%3D"+uri+"&apn=com.hearty.me&amv=59&afl="+url+"&ibi=com.hearty.me&isi=1423459636&ifl="+url+"&st="+title+"&sd="+desc+"&si="+img+"&at=1010lPJU&ct=hj.rs&mt=8&pt=119194312&ofl="+url+"&"+utm
-			})
-		}).then((r) => {
-			return r.json();
-		}).then((j) => {
-			return ("shortLink" in j) ? (j["shortLink"]||"").replace("app.hj.rs","hj.rs") : false;
-		}).catch((e) => {
-			console.warn("😵 Error: "+JSON.stringify(e));
-		});
-	}
-	*/
 }
 
 // QRcode
@@ -493,7 +472,7 @@ function get_qrcode($qr, url, fn){
 		hj_getScript_gh({
 			repo: "ushelp/EasyQRCodeJS", 
 			path: "dist/easy.qrcode.min.js", 
-			commit: "4.6.1"
+			commit: "4.6.2"
 		}, function(){
 			get_qrcode($qr, url, fn);
 		});
@@ -610,20 +589,15 @@ function ga_evt_push(evt, val){
 	if(!evt) return;
 
 	// GA
-	if(typeof gtag!="undefined"){
-		try{
-			gtag("event", evt, val);
-		}
-		catch(e){}
-	}
-	/* GA 4
 	if(typeof dataLayer!="undefined"){
 		try{
-			window.dataLayer.push({"event": evt});
+			window.dataLayer.push({
+				event: evt, 
+				event_value: val
+			});
 		}
 		catch(e){}
 	}
-	*/
 
 	// Mixpanel
 	if(typeof mixpanel!="undefined"){
@@ -690,7 +664,7 @@ function ln_evt_push(evt){
 		try{
 			_lt("send", "cv", {
 				type: evt
-			},["91b6ece5-a435-4ac9-9119-d8973be6322e"]);
+			},["857c4e83-2167-46be-b91d-f5434a205e64"]);
 
 			if(evt=="CompleteRegistration") ln_evt_push("Conversion");
 		}
@@ -856,7 +830,7 @@ function hj_rate(){
 				a = ((check_hjapp()||"").match(/iOS|Android/)||[])[0];
 
 			if(!is_touch_device()){ // 電腦網頁
-				open_url("//bit.ly/3WCa2e9");
+				open_url("//www.google.com/search?q=%e6%ba%ab%e5%ba%a6%e6%97%a5%e8%a8%98&ludocid=5960759452335430689#lrd=0x3442aa2ea286a223:0x52b8df23f4015c21,3,5");
 				msg('<i class="fal fa-flower"></i> '+_h("h-rate-2"), _h("h-rate-3")+' <i class="fas fa-kiss-wink-heart"></i>');
 			}
 			else if(!a){ // 手機網頁
@@ -928,19 +902,14 @@ function get_app(os, cp){
 		break;
 
 		case "Windows":
+			// 1.1.4 (Common 2025: Chrome > Brave > Edge)
 			hj_getFile(
-
-			// Edge SmartScreen 會阻擋新版本
-			// 待下載次數多後，再給 Edge用戶
-			check_browser("Edg") ? 
-				// 1.0.6 (Edge 2022)
-				"d.hearty.app/win/1.0.7/smartscreen-passed/Hearty%20Journal.exe" : 
-
-				// 1.1.4 (Common 2025: Chrome > Brave > Edge)
-				"d.hearty.app/win/Hearty%20Journal.exe"
-
-				, fname+".exe", function(){
-					msg('<img src="//i0.wp.com/hearty.me/images/downloads.png" width="300">');
+				"d.hearty.app/win/Hearty%20Journal.exe", fname+".exe", function(){
+					msg(
+						check_browser("Edg") ? 
+						'<img src="//i0.wp.com/hearty.me/images/downloads.edge.webp">' : 
+						'<img src="//i0.wp.com/hearty.me/images/downloads.png" width="300">'
+					);
 			});
 
 			get_app_events(os, cp);
