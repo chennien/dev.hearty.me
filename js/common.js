@@ -2,7 +2,7 @@
 
 // GA init
 window.dataLayer = window.dataLayer || [];
-dataLayer.push({event: "hearty_test"});
+dataLayer.push({event: "custom", event_name: "hearty_test"});
 
 $.ajaxSetup({scriptCharset: "utf-8", cache: true});
 $.wait = function(ms){
@@ -589,7 +589,7 @@ function ga_evt_push(evt, val){
 	if(typeof dataLayer!="undefined"){
 		try{
 			window.dataLayer.push({
-				event: evt, 
+				event: "custom", 
 				event_name: evt, 
 				event_value: val
 			});
