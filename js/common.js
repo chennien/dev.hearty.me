@@ -590,6 +590,7 @@ function ga_evt_push(evt, val){
 		try{
 			window.dataLayer.push({
 				event: evt, 
+				event_name: evt, 
 				event_value: val
 			});
 		}
