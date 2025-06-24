@@ -1437,6 +1437,7 @@ a:active{
 	}
 	.popup.notice_checkin img, 
 	.popup.notice_gift img{
+		display: block;
 		width: 200px;
 		height: auto;
 		margin: .5em auto;
