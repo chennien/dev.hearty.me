@@ -367,65 +367,9 @@ function gform_post(uri, data){
 	}
 }
 
-// 短網址
-function url_shortener(path, is_short, title, img, desc){
-	path = (path || "").replace(location.origin+"/", ""); // 剔除域名
-
-	let host = "https://hearty.me/", 
-		utm = "utm_source=hj.rs&utm_medium=hj.rs&utm_campaign=hj.rs", 
-		uri = path+(path.indexOf("?")<0?"?":"&")+utm, 
-		url = encodeURIComponent(host+uri);
-
-	uri = encodeURIComponent(uri);
-	title = encodeURIComponent(title || document.title);
-	img = encodeURIComponent(img || "https://i.hearty.app/i/illustrations/sheara.jpg?o=1");
-	desc = encodeURIComponent(desc || "Hearty Journal 溫度日記："+host+path);
-
-	return $.ajax({
-		url: "//hj.rs/_/get", 
-		type: "POST", 
-		crossDomain: true, 
-		async: true, 
-		headers: {Accept: "application/json"}, 
-		contentType: "application/json", 
-		dataType: "json", 
-		data: JSON.stringify({
-			suffix: {option: is_short ? "SHORT" : "UNGUESSABLE"}, 
-			longDynamicLink: "https://app.hj.rs/?link="+host+"wv?p%3D"+uri+"&apn=com.hearty.me&amv=68&afl="+url+"&ibi=com.hearty.me&isi=1423459636&ifl="+url+"&st="+title+"&sd="+desc+"&si="+img+"&at=1010lPJU&ct=hj.rs&mt=8&pt=119194312&ofl="+url+"&"+utm
-		})
-	}).then(function(j){
-		if("shortLink" in j){
-			let shortened = (j["shortLink"]||"").split("/").slice(-1).toString();
-
-			// forms.gle/TnbqbGpguryiP6UR6
-			gform_post("1FAIpQLSdSBwn2jYQoGxa4_IavoY_PTzhEN-j7drarxHa9lYQSDNKVdQ", {
-				"entry.1786867398": "https://hj.rs/"+shortened, 
-				"entry.596740612": host+path, 
-				"entry.1965404500": check_browser()+", "+check_OS(), 
-				"entry.178006682": today(8)
-			});
-
-			/*
-			hj_update({
-				action: "gform_post", 
-				uri: "1FAIpQLSdSBwn2jYQoGxa4_IavoY_PTzhEN-j7drarxHa9lYQSDNKVdQ", 
-				data: $.param({
-					"entry.1179854838": "[hj_user_id]", 
-					"entry.1215682547": "[hj_username]", 
-					"emailAddress": "[hj_email]", 
-					"entry.1786867398": "https://hj.rs/"+shortened, 
-					"entry.596740612": host+path, 
-					"entry.1965404500": check_browser()+", "+check_OS(), 
-					"entry.178006682": new Date((new Date).getTime()+288e5).toISOString().split("T")[0]
-				})
-			});
-			*/
-			return shortened;
-		}
-		else{
-			return false;
-		}
-	});
+function url_shortener(){
+	console.warn("* fn url_shortener is deprecated");
+	return false;
 }
 
 // QRcode
@@ -433,7 +377,7 @@ function get_qrcode($qr, url, fn){
 	$qr = $qr || $(".qrcode");
 
 	if("QRCode" in window){
-		let icon = "//i.hearty.app/b/images/qrcode.icon.png?o=1";
+		let icon = "https://i.hearty.app/b/images/qrcode.icon.png?o=1";
 
 		new QRCode($qr.empty().get(0), {
 			text: url || location.href.replace("//hearty.me", "//hearty.app"), 
