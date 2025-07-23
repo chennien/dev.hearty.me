@@ -1104,6 +1104,7 @@ a:active{
 			}
 			.popup.share .penpals select{
 				display: block;
+				min-height: 150px; /* 修復特有 bug：在 Chrome 動態加載時，元素高度為 0 問題 */
 				margin: .5em auto;
 				border: 1px dotted #bc8f8f;
 				color: #bc8f8f;
