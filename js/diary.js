@@ -64,9 +64,6 @@ $(function(){
 	*/
 });
 
-// 愛諾園測試用 ### debug
-if(!!getcookie("hearty_loveuno")) hj_href("//demo.loveuno.com/?utm_source=hearty_journal&utm_medium=hearty_journal&utm_campaign=hearty_journal&utm_id=hearty_journal");
-
 // unhandledrejection
 window.addEventListener("unhandledrejection", function(e){
 	hj_update_failed({
@@ -784,7 +781,11 @@ function editor_include_once(){
 
 // 手機上，與游標同步下捲
 function editor_editable_scroll_to_bottom(e, el){
-	if(is_touch_device() && e.keyCode==13){
+	if(is_touch_device() && e.keyCode==13 && 
+		// Android App 彈出的鍵盤為絕對定位，會蓋住日記編輯器的下半部
+		// 保留預設行為，可在打字換行時，自動切至下一行
+		!check_hjapp("Android")
+	){
 		var $pg = $(".bk-page"), 
 			range = window.getSelection().getRangeAt(0), 
 			r = document.createRange(), 
@@ -795,7 +796,7 @@ function editor_editable_scroll_to_bottom(e, el){
 			if(check_OS("iOS")) $("body").scrollTop(editable_height-(
 				window.screen.availHeight>=812 ? 333 : 258 // iOS Keybaord Size
 			)); // ALT: $("body").scrollTop($("body").scrollTop()+20);
-			else $pg.scrollTop(editable_height); // Android
+			else $pg.scrollTop(editable_height); // Android Web，捲到底
 		}
 	}
 }
