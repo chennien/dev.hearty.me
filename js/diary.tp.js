@@ -58,8 +58,8 @@ $(function(){
 
 	/* 維修預告
 	scheduled_maintenance(true, [
-		1656795600, // 2022/7/3 @ 5:00am
-		1656799200 // 2022/7/3 @ 6:00am
+		1761249600, // 2025/10/24 @ 4:00am
+		1761253200 // 2025/10/24 @ 5:00am
 	]);
 	*/
 });
@@ -5641,8 +5641,36 @@ function price_selector(pkg_id){
 	}
 }
 
+// 強制用 TapPay
 function hj_purchase(d){
-	hj_purchase_nptp(d); // 藍新為主
+	if(d==null) return false;
+
+	hj_href("shop/tp.buy?"+$.param(d));
+
+	let pkg_id = d["pkg"], 
+		pkg = pkg_info(pkg_id);
+
+	ga_evt_push("add_to_cart", {
+		items: [{
+			item_id: pkg_id, 
+			item_name: "VIP Premium", 
+			item_list_name: "pricing", 
+			item_variant: (d["recurring"]==0 ? "Prepaid" : "Monthly")+" Plan", 
+			quantity: pkg["quantity"], 
+			price: pkg["unit"]
+		}]
+	});
+	fb_evt_push("AddToCart", {
+		content_type: "product", 
+		content_name: "VIP Premium", 
+		contents: [{
+			id: pkg_id, 
+			quantity: pkg["quantity"]
+		}], 
+		value: pkg["subtotal"], 
+		num_items: 1, 
+		currency: "TWD"
+	});
 }
 	// 藍新為主
 	// 僅國外儲值用 TP，其他用藍新
