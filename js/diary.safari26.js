@@ -4423,12 +4423,9 @@ function post_query(post_id, via_backbtn){
 					e.stopPropagation();
 				});
 
-				// 電腦上，只要拖曳過，即啟動自動播放
-				if(!is_touch_device()){
-					$p.on("swipe", function(){
-						$(this).slick("slickPlay");
-					});
-				}
+				// Safari 26 Bug Workaround 臨時修復
+				// 以 JS 強制重申 width: 100%，修正 background-size 未套用，而導致會將封面圖片放大顯示的問題
+				$(".bk-page figure div").css({width:"100%"});
 			}
 		}
 		else{
