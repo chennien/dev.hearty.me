@@ -4426,6 +4426,7 @@ function post_query(post_id, via_backbtn){
 
 			// Safari 26 Bug Workaround 臨時修復
 			// 以 JS 強制重申 width: 100%，修正 background-size 未套用，而導致封面圖片未縮放至滿版的問題
+			// https://i.hearty.app/j/69bca222ae510.png
 			if(check_browser("Safari")) $(".bk-page figure div").css({width:"100%"});
 		}
 		else{
