@@ -4422,11 +4422,11 @@ function post_query(post_id, via_backbtn){
 				}).find(".dots").on("click", function(e){
 					e.stopPropagation();
 				});
-
-				// Safari 26 Bug Workaround 臨時修復
-				// 以 JS 強制重申 width: 100%，修正 background-size 未套用，而導致會將封面圖片放大顯示的問題
-				if(check_browser("Safari")) $(".bk-page figure div").css({width:"100%"});
 			}
+
+			// Safari 26 Bug Workaround 臨時修復
+			// 以 JS 強制重申 width: 100%，修正 background-size 未套用，而導致封面圖片未縮放至滿版的問題
+			if(check_browser("Safari")) $(".bk-page figure div").css({width:"100%"});
 		}
 		else{
 			$p.filter(".slick-initialized").slick("unslick");
