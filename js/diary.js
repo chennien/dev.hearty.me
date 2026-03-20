@@ -2384,7 +2384,7 @@ function sticker__createDOM(bundle_id, bundle, default_pos){
 
 		$a = $(".hj-sample .asset").clone().attr({
 				title: asset["item_name"], 
-				"data-editing": true, 
+				"data-editing": 1, 
 				"data-bundle_id": bundle_id, 
 				"data-asset_id": asset_id
 			})
@@ -2882,7 +2882,7 @@ function sticker__cut(d){
 	$("#editor .bundle .sticker_static").fadeTo("fast", 0.5);
 
 	// 剪下鈕
-	$a.attr("data-editing", true);
+	$a.attr("data-editing", 1);
 
 	// 工具列鈕
 	$(".editor_toolbelt #paste,#editor").attr({onclick: "sticker__paste("+JSON.stringify({bundle_id: bundle_id, asset_id: asset_id})+",true);saved(false)"});
@@ -3016,7 +3016,7 @@ function sticker__paste(d, scrollintoview){
 	sticker__rotation_margin_fixes(bundle_id, asset_id);
 
 	// 編輯器
-	$a.attr("data-editing", false).css({top: 0, left: 0});
+	$a.attr("data-editing", 0).css({top: 0, left: 0});
 	$i.children(".ui-resizable-handle,.ui-rotatable-handle").hide();
 	if(current_post()["editable"]){
 		$a.draggable("disable");
