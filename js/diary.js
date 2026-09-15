@@ -6,7 +6,7 @@ var timer; // 自動儲存重試 timeout
 $(function(){
 	$d1 = $.when(
 		$d0, // book init
-		hj_getScript("//cdn.jsdelivr.net/combine/gh/godswearhats/jquery-ui-rotatable@1.1.1/jquery.ui.rotatable.min.js,npm/jquery-ui-touch-punch@0.2.3/jquery.ui.touch-punch.min.js,npm/interactjs@1.10.27/dist/interact.min.js"+(!getUrlPara("retry") ? "" : "?"))
+		hj_getScript("//cdn.jsdelivr.net/combine/gh/godswearhats/jquery-ui-rotatable@1.1.1/jquery.ui.rotatable.min.js,npm/jquery-ui-touch-punch@0.2.3/jquery.ui.touch-punch.min.js,npm/interactjs@1.10.28/dist/interact.min.js"+(!getUrlPara("retry") ? "" : "?"))
 	).then(function(){
 		editor_include_once();
 		editor_enable();
