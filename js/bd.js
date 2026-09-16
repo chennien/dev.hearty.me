@@ -47,7 +47,8 @@ $(function(){
 	var slide_num = $("body").width()>767 ? 5 : 3;
 	$(".bd_brands div").delay(100).queue(function(){
 		$(this).slick({
-			autoplay: true, 
+			rows: 0, 
+			autoplay: true,
 			autoplaySpeed: 1500, 
 			infinite: true, 
 			slidesToShow: slide_num, 

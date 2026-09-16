@@ -182,6 +182,7 @@ function hj_firstrun(){
 
 				// github.com/kenwheeler/slick/
 				$s.slick({
+					rows: 0, 
 					infinite: false, 
 					arrows: !is_touch_device(), 
 					dots: true, 
@@ -4394,6 +4395,7 @@ function post_query(post_id, via_backbtn){
 				$p.find("figure").length>1
 			){
 				$p.slick({
+					rows: 0, 
 					autoplaySpeed: 1500, 
 					infinite: true, 
 					dots: true, 
