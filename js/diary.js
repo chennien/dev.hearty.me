@@ -502,8 +502,8 @@ function editor_enable(on){
 			*/
 			hj_getScript_gh({
 				repo: "chennien/dev.hearty.me", 
-				path: "js/jquery4.uploadfile.min.js", 
-				commit: "d2bf61b054bdb12cd77ee5f5138587b02a8e685e"
+				path: "js/jquery.uploadfile.min.js", 
+				commit: "fd2ab70484caaeb258833286116a86b2a1e85d5b"
 			}, image_uploader_init);
 
 			$e.data({editor_loaded: true});
