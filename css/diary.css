@@ -1131,18 +1131,11 @@ a:active{
 						cursor: not-allowed;
 					}
 
-					/*
-					Android 修正：
-					系統原生 select選中項強制以藍色高亮（無法用 CSS覆寫），
-					且「剛選中的藍色」與「已選中的灰色」交錯出現，容易造成困惑。
-					改用 appearance: base-select，讓選中項改以打勾標示。
+					/* Android 修正：覆寫系統原生 select選中項的藍色高亮
+					https://i.imgur.com/Vcmoagn.mp4
 					*/
-					@supports not (-webkit-touch-callout: none){ /* not iOS */
-						@media (pointer: coarse){ /* touch screen only */
-							.popup.share .penpals select{
-								appearance: base-select;
-							}
-						}
+					.popup.share .penpals select option:checked{
+						background: #f5f5f5 linear-gradient(0deg, #f8f3f3 0%, #f8f3f3 100%);
 					}
 
 	/* 自訂封面 */
