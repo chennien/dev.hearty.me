@@ -21,8 +21,8 @@ $(function(){
 
 	// YTbox
 	hj_getScript_gh({
-		path: "js/ytbox.min.js"
-		// commit: "main"
+		path: "js/ytbox.min.js", 
+		commit: "a5f0aaafbca69d621830c6279f6969a2d9508c32"
 	});
 
 	// 網路及電量
@@ -494,16 +494,9 @@ function editor_enable(on){
 			screenlock("initialize", pincode || "");
 
 			// 相片上傳
-			/*
 			hj_getScript_gh({
 				path: "js/jquery.uploadfile.min.js", 
-				// commit: "main"
-			}, image_uploader_init);
-			*/
-			hj_getScript_gh({
-				repo: "chennien/dev.hearty.me", 
-				path: "js/jquery.uploadfile.min.js", 
-				commit: "fd2ab70484caaeb258833286116a86b2a1e85d5b"
+				commit: "a5f0aaafbca69d621830c6279f6969a2d9508c32"
 			}, image_uploader_init);
 
 			$e.data({editor_loaded: true});
@@ -1403,7 +1396,7 @@ function period__initialize(){
 			// Date-picker bug on some Chrome 131, Windows
 			// https://i.hearty.app/j/6768f963d041c.gif
 			path: "js/periods.min.js", 
-			commit: "2d82153af2b372ed363e90080a81d45ee20113ec" // commit: "main"
+			commit: "a5f0aaafbca69d621830c6279f6969a2d9508c32"
 		}, function(){
 			$pd.slideDown("slow").data({loaded: true});
 		});
