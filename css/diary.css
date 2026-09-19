@@ -1144,13 +1144,6 @@ a:active{
 							}
 						}
 					}
-						/* 電腦專用：滑鼠 hover時以褐色標示，避免與上方 Android樣式互斥 */
-						@media (hover: hover){
-							.popup.share .penpals select option:hover{
-								background: #f8f3f3;
-							}
-						}
-
 
 	/* 自訂封面 */
 	.popup.style .row, 
