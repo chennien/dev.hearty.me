@@ -1131,15 +1131,26 @@ a:active{
 						cursor: not-allowed;
 					}
 
-					/* 僅電腦版顯示 hover
-					因 Android 自帶 UA樣式，讓選中項以淺藍色顯示
-					如點擊觸發 hover而顯示為其他顏色，將導致用戶不確定日記成功送出
+					/*
+					Android 修正：
+					系統原生 select選中項強制以藍色高亮（無法用 CSS覆寫），
+					且「剛選中的藍色」與「已選中的灰色」交錯出現，容易造成困惑。
+					改用 appearance: base-select，讓選中項改以打勾標示。
 					*/
-					@media (hover: hover){
-						.popup.share .penpals select option:hover{
-							background: #f8f3f3;
+					@supports not (-webkit-touch-callout: none){ /* not iOS */
+						@media (pointer: coarse){ /* touch screen only */
+							.popup.share .penpals select{
+								appearance: base-select;
+							}
 						}
 					}
+						/* 電腦專用：滑鼠 hover時以褐色標示，避免與上方 Android樣式互斥 */
+						@media (hover: hover){
+							.popup.share .penpals select option:hover{
+								background: #f8f3f3;
+							}
+						}
+
 
 	/* 自訂封面 */
 	.popup.style .row, 
