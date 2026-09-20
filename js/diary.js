@@ -22,7 +22,7 @@ $(function(){
 	// YTbox
 	hj_getScript_gh({
 		path: "js/ytbox.min.js", 
-		commit: "a5f0aaafbca69d621830c6279f6969a2d9508c32"
+		commit: "883114b1aec28b15845ab1a7df75bd10370ccab3"
 	});
 
 	// 網路及電量
@@ -496,7 +496,7 @@ function editor_enable(on){
 			// 相片上傳
 			hj_getScript_gh({
 				path: "js/jquery.uploadfile.min.js", 
-				commit: "a5f0aaafbca69d621830c6279f6969a2d9508c32"
+				commit: "883114b1aec28b15845ab1a7df75bd10370ccab3"
 			}, image_uploader_init);
 
 			$e.data({editor_loaded: true});
@@ -1396,7 +1396,7 @@ function period__initialize(){
 			// Date-picker bug on some Chrome 131, Windows
 			// https://i.hearty.app/j/6768f963d041c.gif
 			path: "js/periods.min.js", 
-			commit: "a5f0aaafbca69d621830c6279f6969a2d9508c32"
+			commit: "883114b1aec28b15845ab1a7df75bd10370ccab3"
 		}, function(){
 			$pd.slideDown("slow").data({loaded: true});
 		});
