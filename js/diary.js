@@ -22,7 +22,7 @@ $(function(){
 	// YTbox
 	hj_getScript_gh({
 		path: "js/ytbox.min.js", 
-		commit: "883114b1aec28b15845ab1a7df75bd10370ccab3"
+		commit: "19a3b076b27421c529992655c95975fb42e6a70d"
 	});
 
 	// 網路及電量
@@ -496,7 +496,7 @@ function editor_enable(on){
 			// 相片上傳
 			hj_getScript_gh({
 				path: "js/jquery.uploadfile.min.js", 
-				commit: "883114b1aec28b15845ab1a7df75bd10370ccab3"
+				commit: "19a3b076b27421c529992655c95975fb42e6a70d"
 			}, image_uploader_init);
 
 			$e.data({editor_loaded: true});
@@ -1396,7 +1396,7 @@ function period__initialize(){
 			// Date-picker bug on some Chrome 131, Windows
 			// https://i.hearty.app/j/6768f963d041c.gif
 			path: "js/periods.min.js", 
-			commit: "883114b1aec28b15845ab1a7df75bd10370ccab3"
+			commit: "19a3b076b27421c529992655c95975fb42e6a70d"
 		}, function(){
 			$pd.slideDown("slow").data({loaded: true});
 		});
@@ -3855,7 +3855,7 @@ function sticker__list(set_num, set_alias){
 									"data-src": set["alias"]+"/"+set["cover"]+".png"
 								}).add($("<h5>", {
 									text: set["name"], 
-									"data-new": +(set_num>122||[82,103].indexOf(set_num)>=0)
+									"data-new": +(set_num>122||[27,104,105,115].indexOf(set_num)>=0)
 								})), 
 							"data-sticker": 0
 						})
@@ -4928,7 +4928,7 @@ function post_archive(){
 				switch(r["Status"]){
 					case 1:
 						catalog_page({page: 1});
-						$page.find(".diary").attr("data-hidden", ""); $page.find(".prologue").slideDown();
+						$page.find(".diary").attr("data-hidden", ""); $page.find(".prologue").slideDown(); toolbelt_toggle(false);
 						$(".catalog .diaries li[data-post_id='"+post_id+"']").remove();
 						alertify.error('<i class="far fa-trash-alt"></i> '+_h("e-archive-2", {$title: subject}));
 
@@ -5710,6 +5710,7 @@ function hj_purchase(d){
 			num_items: 1, 
 			currency: "TWD"
 		});
+		oa_evt_push("items_added", "contents");
 	}
 	// TP 為主
 	// 僅台灣儲值用藍新，其他用 TP
@@ -5751,6 +5752,7 @@ function hj_purchase(d){
 			num_items: 1, 
 			currency: "TWD"
 		});
+		oa_evt_push("items_added", "contents");
 	}
 
 	// 藍新 (已停用)
@@ -5781,6 +5783,7 @@ function hj_purchase(d){
 			num_items: 1, 
 			currency: "TWD"
 		});
+		oa_evt_push("items_added", "contents");
 	}
 
 // 相片上傳
@@ -6120,6 +6123,7 @@ function free_trial_activate(){
 					event_category: "Account", 
 					event_label: "Trial Activate"
 				});
+				oa_evt_push("trial_started", "plan_enrollment");
 				fb_evt_push("StartTrial");
 			break;
 
