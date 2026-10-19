@@ -22,7 +22,7 @@ $(function(){
 	// YTbox
 	hj_getScript_gh({
 		path: "js/ytbox.min.js", 
-		commit: "19a3b076b27421c529992655c95975fb42e6a70d"
+		commit: "7f6c5151fd2eb45ef07e8ab5d98a5d94e9f870a6"
 	});
 
 	// 網路及電量
@@ -496,7 +496,7 @@ function editor_enable(on){
 			// 相片上傳
 			hj_getScript_gh({
 				path: "js/jquery.uploadfile.min.js", 
-				commit: "19a3b076b27421c529992655c95975fb42e6a70d"
+				commit: "7f6c5151fd2eb45ef07e8ab5d98a5d94e9f870a6"
 			}, image_uploader_init);
 
 			$e.data({editor_loaded: true});
@@ -1269,65 +1269,22 @@ function network_status(issues, status){
 
 // 翻面
 function flip_book(){
-	$(".bk-flip").trigger("click");
+	var $b = $(".bk-list .bk-book"), f = !$b.hasClass("bk-filp");
+	$b.toggleClass("bk-filp", f).toggleClass("bk-default", !f).removeClass("bk-viewinside");
 }
 
 function book__initialize(open){
-	var Books = (function(){
-		var $books = $(".bk-list .bk-book"), 
-			booksCount = $books.length;
-
-		function init(){
-			$books.each(function(){
-				var $book = $(this), 
-					$other = $books.not($book), 
-					$parent = $book.parent(), 
-					$read = $(".bk-read"), 
-					$flip = $(".bk-flip");
-
-				$read.on("click", function(){
-					var $this = $(this);
-
-					$other.data({opened: false}).removeClass("bk-viewinside").parent().css("z-index", 0).find(".bk-read").removeClass("bk-active");
-					if(!$other.hasClass("bk-filp"))
-						$other.addClass("bk-default");
-
-					if($book.data("opened")){
-						$this.removeClass("bk-active");
-						$book.data({opened: false, flip: false }).removeClass("bk-viewinside").addClass("bk-default");
-					}
-					else{
-						$this.addClass("bk-active");
-						$book.data({opened: true, flip: false}).removeClass("bk-filp bk-default").addClass("bk-viewinside");
-						$parent.css("z-index", booksCount);
-					}
-				});
-
-				$flip.on("click", function(){				
-					$read.removeClass("bk-active");
-
-					if($book.data("flip"))
-						$book.data({opened: false, flip: false}).removeClass("bk-filp").addClass("bk-default");
-					else
-						$book.data({opened: false, flip: true}).removeClass("bk-viewinside bk-default").addClass("bk-filp");
-				} );
-
-			});
-		}
-			return {init: init};
-	})();
-	Books.init();
-
 	$(".mask_loading").delay(600).queue(function(){
 		$(this).finish().fadeOut("fast", function(){
+			// 載入期間書已被打開：略過旋轉，仍需 resolve $d0，否則編輯器不會啟用
+			if($(".bk-viewinside").length) return window.$d0.resolve();
+
 			// 載入自動開書
-			if(!$(".bk-viewinside").length){
-				$(".bk-list .bk-book").addClass("bk-rotate").delay(1200).queue(function(){
-					if(open) open_book(true);
-					$(this).removeClass("bk-rotate").dequeue();
-					window.$d0.resolve();
-				});
-			}
+			$(".bk-list .bk-book").addClass("bk-rotate").delay(1200).queue(function(){
+				if(open) open_book(true);
+				$(this).removeClass("bk-rotate").dequeue();
+				window.$d0.resolve();
+			});
 		});
 	});
 
@@ -1358,9 +1315,6 @@ function book__initialize(open){
 	$(".bk-list .bk-page,.bk-cover-back .catalog").delay(800).queue(function(){
 		$(this).scrollTop(0).dequeue();
 	});
-
-	// M$ Edge Dirty Fix (Div Scroll Overflow Issue)
-	if(check_browser("Edge")) $(".bk-cover-back .catalog").scrollTop($(".bk-cover-back .catalog").get(0)?.scrollHeight);
 }
 
 // 啟動：編輯區
@@ -1396,7 +1350,7 @@ function period__initialize(){
 			// Date-picker bug on some Chrome 131, Windows
 			// https://i.hearty.app/j/6768f963d041c.gif
 			path: "js/periods.min.js", 
-			commit: "19a3b076b27421c529992655c95975fb42e6a70d"
+			commit: "7f6c5151fd2eb45ef07e8ab5d98a5d94e9f870a6"
 		}, function(){
 			$pd.slideDown("slow").data({loaded: true});
 		});
