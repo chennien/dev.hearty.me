@@ -2307,15 +2307,9 @@ body.hj,
 	/*
 	A child div (.catalog[data-desktop]) isn't scrollable wrapped in an absolute positioned element (.bk-cover-back) on Firefox and Safari macOS. Thus, the scrollbar is show to scroll manually by user (::-webkit-scrollbar, scrollbar-width) .
 	*/
-	/* All but not Safari macOS */
-	@media all and (min-resolution:.001dpcm){
-		@media{
-			.bk-cover-back .catalog::-webkit-scrollbar{
-				display: none;
-				width: 0;
-				background: transparent;
-			}
-		}
+	/* Chrome 亦保留細捲軸作為備援（原本對 Safari macOS 以外隱藏），Chrome 121+ 以 scrollbar-width 優先於 ::-webkit-scrollbar */
+	.catalog[data-desktop]{
+		scrollbar-width: thin;
 	}
 
 
@@ -2730,6 +2724,12 @@ diary.pagination.min.css
 .bk-list .bk-viewinside .bk-front{
 	transform: translate3d(0,0,20px) rotate3d(0,1,0,-160deg);
 }
+	/* 開書後封面翻到背面：.bk-cover-back 轉 -179deg，有一半位於封面平面後方，
+		Chrome 合成器捲動 hit-test 不一定略過背面圖層，滾輪會被看不見的封面攔走，導致目錄無法捲動
+	*/
+	.bk-list .bk-viewinside .bk-cover{
+		pointer-events: none;
+	}
 .bk-list .bk-book.bk-viewinside{
 	transform: translate3d(0,0,150px) rotate3d(0,1,0,0);
 }
