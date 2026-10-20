@@ -3419,45 +3419,7 @@ function post_penpal_add(user){
 				action: "post_penpal_add", 
 				penpal: user
 			}).then(function(r){
-				switch(r["Status"]){
-					case 1:
-						var penpal = r["Values"];
-						post_penpal_option(penpal).prependTo($s);
-
-						if(hj_membership()[1]>4) $(".penpals .penpal_delete").fadeTo("fast",1); // 封存筆友鈕
-						alertify.success('<i class="fas fa-user-plus"></i> '+_h("e-penpal_add-5", {$name: penpal["nickname"]}));
-
-						ga_evt_push("Penpal", {
-							event_category: "Add User", 
-							event_label: "Penpal"
-						});
-					break;
-
-					case 2:
-						signin_required();
-					break;
-
-					case 3: // 加入過囉
-						msg('<i class="far fa-grin"></i> '+_h("e-penpal_add-6", {$user: user}));
-					break;
-
-					case 4: // 已遭封存
-						$("#alertify .alertify-text").val("");
-						msg('<i class="far fa-user-slash"></i> '+_h("e-penpal_add-8", {$user: user})+" (;´ㅁ`)-3");
-					break;
-
-					case 5: // 輸入自己
-						$("#alertify .alertify-text").val("");
-						msg('<i class="far fa-grin-beam-sweat"></i> '+_h("e-penpal_add-9"));
-					break;
-
-					default: // 找不到
-						msg('<i class="far fa-grin-beam-sweat"></i> '+_h("e-penpal_add-7", {$user: user}), _h("e-retry"), function(){
-							alertify_input_shake();
-						});
-						post_penpal_add(user);
-					break;
-				}
+				post_penpal_add_result(r, user);
 			});
 		}
 	}, (user || "").toString() );
@@ -3472,6 +3434,66 @@ function post_penpal_add(user){
 
 	// 開啟通知
 	hj_fcm_init();
+
+	function post_penpal_add_result(r, user){
+		switch(r["Status"]){
+			case 1:
+				var penpal = r["Values"];
+				post_penpal_option(penpal).prependTo($s);
+
+				if(hj_membership()[1]>4) $(".penpals .penpal_delete").fadeTo("fast",1); // 封存筆友鈕
+				alertify.success('<i class="fas fa-user-plus"></i> '+_h("e-penpal_add-6", {$name: htmlspecialchars(htmlDecode(penpal["nickname"]))}));
+
+				ga_evt_push("Penpal", {
+					event_category: "Add User", 
+					event_label: "Penpal"
+				});
+			break;
+
+			case 2:
+				signin_required();
+			break;
+
+			case 3: // 加入過囉
+				msg('<i class="far fa-grin"></i> '+_h("e-penpal_add-7", {$user: user}));
+			break;
+
+			case 4: // 已遭封存
+				$("#alertify .alertify-text").val("");
+				msg('<i class="far fa-user-slash"></i> '+_h("e-penpal_add-9", {$user: user})+" (;´ㅁ`)-3");
+			break;
+
+			case 5: // 輸入自己
+				$("#alertify .alertify-text").val("");
+				msg('<i class="far fa-grin-beam-sweat"></i> '+_h("e-penpal_add-10"));
+			break;
+
+			case 6: // 確認對象
+				var penpal = r["Values"];
+				alertify.set({labels: {ok: '<i class="far fa-plus"></i> '+_h("e-penpal_add-3"), cancel: _h("e-back")}, buttonReverse: false});
+				alertify.confirm('<i class="fal fa-user-check"></i> '+_h("e-penpal_add-5", {$name: htmlspecialchars(htmlDecode(penpal["nickname"])), $user: penpal["username"]}), function(e){
+					if(e){
+						hj_update({
+							action: "post_penpal_add", 
+							penpal_user_id: penpal["user_id"]
+						}).then(function(r){
+							post_penpal_add_result(r, user);
+						});
+					}
+					else{
+						post_penpal_add(user); // 返回輸入框
+					}
+				});
+			break;
+
+			default: // 找不到
+				msg('<i class="far fa-grin-beam-sweat"></i> '+_h("e-penpal_add-8", {$user: user}), _h("e-retry"), function(){
+					alertify_input_shake();
+				});
+				post_penpal_add(user);
+			break;
+		}
+	}
 }
 
 // 封存筆友
