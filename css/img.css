@@ -78,14 +78,22 @@ a:active{
 
 		/* 不擋住 img的點擊（read_post） */
 		pointer-events: none;
-		font-size: small;
-		line-height: 1;
-		letter-spacing: 1px;
-		color: rgba(255,255,255,.8);
 
-		/* 淺色相片上仍可辨識 */
-		text-shadow: 0 0 3px rgba(0,0,0,.5);
+		/* 兩排靠右：大字「日」，下方小字「年.月」 */
+		text-align: right;
+		line-height: 1;
+		color: rgba(255,255,255,.75);
+		font-family: "Avenir Next", Avenir, "Segoe UI", Roboto, sans-serif;
+		font-size: 1.8em;
+		font-weight: 600;
 	}
+		.img_wall figcaption span{
+			display: block;
+			margin-top: .15em;
+			font-size: .45em;
+			font-weight: 500;
+			letter-spacing: 1px;
+		}
 
 /* grid：iPhone相簿式，等大正方形，手機 3欄 */
 .img_wall[data-layout="grid"]{
@@ -138,12 +146,8 @@ a:active{
 		.img_wall[data-layout="grid"] .img-loaded img{
 			opacity: 1;
 		}
-	.img_wall[data-layout="grid"] figcaption span{
-		/* 年月已由月份標題標示，只顯示「日」 */
-		display: none;
-	}
 	.img_wall[data-layout="grid"] figure:not(.img-loaded) figcaption{
-		/* 與相片一起淡入 */
+		/* 相片載入前不顯示（masonry排版前整個 figure皆透明，不需此規則） */
 		opacity: 0;
 	}
 
@@ -337,6 +341,10 @@ a:active{
 	.img_wall[data-layout="masonry"] figure{
 		/* 2 欄，gutter 20px */
 		width: calc((100% - 20px) / 2);
+	}
+	.img_wall figcaption{
+		/* 手機相片較小，日期縮小 */
+		font-size: 1.2em;
 	}
 }
 
