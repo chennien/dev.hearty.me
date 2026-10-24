@@ -2282,35 +2282,24 @@ a:active{
 	outline: 0;
 }
 
-/* Hide Scrollbar */
-body.hj, 
-.notifications ul, 
-.bk-list .bk-page, 
-.catalog[data-mobile] div{
-	scrollbar-width: none;
-}
-/* 
+/* Hide Scrollbar（需 Chrome 121+、Safari 18.2+）
 	移除了 .popup-underlayer > div
 	因小螢幕手機上，popup.styles 會太長，需捲軸讓用戶知道下面還有
 */
-	/* Chrome 121 + Safari 18.2 以下用 */
-	body.hj::-webkit-scrollbar, 
-	.notifications ul::-webkit-scrollbar, 
-	.bk-list .bk-page::-webkit-scrollbar, 
-	.catalog[data-mobile] div::-webkit-scrollbar{
-		display: none;
-		width: 0;
-		background: transparent;
-	}
+html:has(> body.hj), /* 視窗捲軸的 scrollbar-width 取自 html，不會從 body 傳遞 */
+body.hj,
+.notifications ul,
+.bk-list .bk-page,
+.catalog[data-mobile] div{
+	scrollbar-width: none;
+}
 
-
-	/*
-	A child div (.catalog[data-desktop]) isn't scrollable wrapped in an absolute positioned element (.bk-cover-back) on Firefox and Safari macOS. Thus, the scrollbar is show to scroll manually by user (::-webkit-scrollbar, scrollbar-width) .
-	*/
-	/* Chrome 亦保留細捲軸作為備援（原本對 Safari macOS 以外隱藏），Chrome 121+ 以 scrollbar-width 優先於 ::-webkit-scrollbar */
-	.catalog[data-desktop]{
-		scrollbar-width: thin;
-	}
+/*
+A child div (.catalog[data-desktop]) isn't scrollable wrapped in an absolute positioned element (.bk-cover-back) on Firefox and Safari macOS. Thus, the scrollbar is shown to scroll manually by user (scrollbar-width).
+*/
+.catalog[data-desktop]{
+	scrollbar-width: thin;
+}
 
 
 .bk-list .bk-book, 
@@ -3797,11 +3786,6 @@ nav.stickerbook .mm-panel::before{
 	.stickerbook div{
 		scrollbar-width: none;
 	}
-		.stickerbook div::-webkit-scrollbar{
-			display: none;
-			width: 0;
-			background: transparent;
-		}
 
 	.stickerbook .item div{
 		width: 70%;

@@ -103,7 +103,7 @@ function hj_getScript(url, onsuccess, onerror, attrs){
 		p = p || {};
 			p["repo"] = "repo" in p ? p["repo"] : "heartyme/web.hearty.me";
 			p["path"] = "path" in p ? p["path"] : "";
-			p["commit"] = "commit" in p ? p["commit"] : "59a64eb238acf2a4879f216b7bea3f4c984677b6"; // "main"
+			p["commit"] = "commit" in p ? p["commit"] : "f664b03649302cf26425dea970f63d83594745cf"; // "main"
 
 		onsuccess = onsuccess || {};
 		onerror = onerror || {};
