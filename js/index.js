@@ -406,120 +406,125 @@ function signup(){
 		return;
 	}
 
-	// 是否為拋棄式信箱
-	var disposable = false;
+	// 避免檢查期間重複送出
+	if(signup.busy) return;
+	signup.busy = true;
+
+	// 是否為拋棄式信箱（非同步，避免註冊瞬間卡住畫面；API 失敗或逾時則略過）
 	$.ajax({
 		url: "//api.usercheck.com/domain/"+email_domain, 
 		// headers: {Authorization: "Bearer m6MHxfLy2tU1Ro9Y0laS0WQy3GZg7Vfm"}, 
 		type: "GET", 
 		crossDomain: true, 
 		dataType: "json", 
-		async: false, 
-		timeout: 2000, 
-		success: function(r){
-			disposable = (r["disposable"]||"")==true;
+		timeout: 2000
+	}).always(function(r, status){
+		if(status=="success" && (r["disposable"]||"")==true){
+			signup.busy = false;
+			toast(_h("i-signup-14"));
+			shake($f); $e.val("").trigger("focus");
+			return;
 		}
+		signup_submit();
 	});
-	if(disposable){
-		toast(_h("i-signup-14"));
-		shake($f); $e.val("").trigger("focus");
-		return;
-	}
 
+	function signup_submit(){
+		// referrer 暫存 Cookie
+		if(!getcookie("hearty_referrer") && !!referrer)
+			setcookie("hearty_referrer", referrer, 90);
+		else if(!!getcookie("hearty_referrer") && !referrer)
+			referrer = getcookie("hearty_referrer");
 
-	// referrer 暫存 Cookie
-	if(!getcookie("hearty_referrer") && !!referrer)
-		setcookie("hearty_referrer", referrer, 90);
-	else if(!!getcookie("hearty_referrer") && !referrer)
-		referrer = getcookie("hearty_referrer");
+		hj_update({
+			action: "signup", 
+			account: account, 
+			email: email, 
+			password: password, 
+			// nickname: nickname, 
+			// gender: gender, 
+			language: $(".language").val()||0, 
+			timezone: timezone, 
+			referrer: referrer, 
+			referral: referral
+		}).then(function(r){
+			switch(r["Status"]){
+				case 0:
+					msg(_h("i-signup-7"));
+					$a[0]?.focus();
+				break;
 
-	hj_update({
-		action: "signup", 
-		account: account, 
-		email: email, 
-		password: password, 
-		// nickname: nickname, 
-		// gender: gender, 
-		language: $(".language").val()||0, 
-		timezone: timezone, 
-		referrer: referrer, 
-		referral: referral
-	}).then(function(r){
-		switch(r["Status"]){
-			case 0:
-				msg(_h("i-signup-7"));
-				$a[0]?.focus();
-			break;
+				case 1:
+					var val = r["Values"];
+					if(!val["verification"]){ // if(val["verification"]=="1"){
+						alertify.success(_h("i-signup-9", {$user: account})); // 發信失敗
+					}
+					else{
+						alert(_h("i-signup-8", {$user: account}));
+						email_verification_suspended(!0);
+					}
 
-			case 1:
-				var val = r["Values"];
-				if(!val["verification"]){ // if(val["verification"]=="1"){
-					alertify.success(_h("i-signup-9", {$user: account})); // 發信失敗
-				}
-				else{
-					alert(_h("i-signup-8", {$user: account}));
-					email_verification_suspended(!0);
-				}
+					$("a.toggler").removeClass("off");
+					box("signin"); signin("first");
 
-				$("a.toggler").removeClass("off");
-				box("signin"); signin("first");
+					if(typeof mixpanel!="undefined"){
+						mixpanel.identify(val["user_id"]);
+						mixpanel.people.set({
+							"$username": val["username"], 
+							"$email": val["email"], 
+							"$created": new Date()
+						});
+					}
 
-				if(typeof mixpanel!="undefined"){
-					mixpanel.identify(val["user_id"]);
-					mixpanel.people.set({
-						"$username": val["username"], 
-						"$email": val["email"], 
-						"$created": new Date()
+					ga_evt_push("Sign Up", {
+						event_category: "Auth", 
+						event_label: "Sign Up"
 					});
-				}
+					fb_evt_push("CompleteRegistration");
+					oa_evt_push("registration_completed", "customer_action");
+					ln_evt_push("CompleteRegistration");
+					ga_evt_push("conversion", {send_to: "AW-1027812032/VU59COmFmNIBEMDVjOoD"});
+				break;
 
-				ga_evt_push("Sign Up", {
-					event_category: "Auth", 
-					event_label: "Sign Up"
-				});
-				fb_evt_push("CompleteRegistration");
-				oa_evt_push("registration_completed", "customer_action");
-				ln_evt_push("CompleteRegistration");
-				ga_evt_push("conversion", {send_to: "AW-1027812032/VU59COmFmNIBEMDVjOoD"});
-			break;
+				case 2:
+					box("signin");
+					toast(_h("i-signup-10")); shake($f);
+					$a[0]?.focus();
+				break;
 
-			case 2:
-				box("signin");
-				toast(_h("i-signup-10")); shake($f);
-				$a[0]?.focus();
-			break;
+				case 3:
+					box("signin");
+					toast(_h("i-signup-11")); shake($f);
+					$a.val(email).trigger("focus");
+				break;
 
-			case 3:
-				box("signin");
-				toast(_h("i-signup-11")); shake($f);
-				$a.val(email).trigger("focus");
-			break;
+				case 4:
+					toast(_h("i-signup-12"));
+					shake($f);
+					$a[0]?.focus();
+				break;
 
-			case 4:
-				toast(_h("i-signup-12"));
-				shake($f);
-				$a[0]?.focus();
-			break;
+				case 5:
+					toast(_h("i-signup-13"));
+					shake($f);
+					$e[0]?.focus();
+				break;
 
-			case 5:
-				toast(_h("i-signup-13"));
-				shake($f);
-				$e[0]?.focus();
-			break;
+				case 9:
+				    toast(_h("i-signup-15"));
+				    shake($f);
+				    msg();
+				break;
 
-			case 9:
-			    toast(_h("i-signup-15"));
-			    shake($f);
-			    msg();
-			break;
-
-			default:
-				msg();
-			break;
-		}
-	}).fail(function(){
-		msg();
-	});
+				default:
+					msg();
+				break;
+			}
+		}).fail(function(){
+			msg();
+		}).always(function(){
+			signup.busy = false;
+		});
+	}
 }
 
 // 密碼重設
