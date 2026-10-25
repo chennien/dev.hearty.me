@@ -227,7 +227,7 @@ function signin(para){
 		$p[0]?.focus(); return;
 	}
 
-	hj_update({
+	hj_update_ts({
 		action: "signin", 
 		account: account, 
 		password: $p.val(), 
@@ -299,6 +299,10 @@ function signin(para){
 				shake($f);
 				toast(_h("i-signin-5", {$user: account}));
 				msg(_h("i-signin-6", {$user: account}));
+			break;
+
+			case 8:
+				ts_failed();
 			break;
 
 			default:
@@ -435,7 +439,7 @@ function signup(){
 		else if(!!getcookie("hearty_referrer") && !referrer)
 			referrer = getcookie("hearty_referrer");
 
-		hj_update({
+		hj_update_ts({
 			action: "signup", 
 			account: account, 
 			email: email, 
@@ -515,6 +519,10 @@ function signup(){
 				    msg();
 				break;
 
+				case 8:
+					ts_failed();
+				break;
+
 				default:
 					msg();
 				break;
@@ -536,7 +544,7 @@ function hj_reset(){
 		$("#account")[0]?.focus(); return;
 	}
 
-	hj_update({
+	hj_update_ts({
 		action: "password_reset", 
 		account: account
 	}).then(function(r){
@@ -554,6 +562,10 @@ function hj_reset(){
 						toast(_h("i-reset-4"));
 					});
 				}
+			break;
+
+			case 8:
+				ts_failed();
 			break;
 
 			default:
@@ -575,12 +587,93 @@ function authbox(on){
 		setTimeout(function(){
 			$h.fadeIn();
 		}, 200);
+		ts_init();
 	}
 	else{
 		$h.fadeOut(); $c.show();
 	}
 	$("body").css("overflow-y", on ? "hidden" : "auto");
 }
+
+// Cloudflare Turnstile (Managed)
+var ts = {id: null, token: "", waiting: [], interactive: false};
+function ts_init(){
+	if(ts.id!==null || !!window.ts_onload || !window.turnstile_sitekey) return;
+	window.ts_onload = function(){
+		ts.id = turnstile.render("#captcha", {
+			sitekey: turnstile_sitekey, 
+			action: "auth", 
+			theme: "light", 
+			size: "flexible", 
+			appearance: "interaction-only", // 需要互動時才顯示
+			"refresh-expired": "auto", 
+			callback: function(t){
+				// 有等待中的請求則直接交付 (一次性)，否則暫存
+				var w = ts.waiting.splice(0);
+				ts.token = w.length>0 ? "" : t;
+				w.forEach(function(f){f(t);});
+			}, 
+			"expired-callback": function(){
+				ts.token = "";
+			}, 
+			"before-interactive-callback": function(){
+				ts.interactive = true;
+				toast(_h("i-captcha-1"));
+			}, 
+			"after-interactive-callback": function(){
+				ts.interactive = false;
+			}, 
+			"error-callback": function(){
+				ts.token = "";
+				ts.waiting.splice(0).forEach(function(f){f("");});
+			}
+		});
+	};
+	hj_getScript("//challenges.cloudflare.com/turnstile/v0/api.js?onload=ts_onload&render=explicit");
+}
+	// 取得 token (一次性)
+	// 背景驗證最多等 10 秒，逾時回傳空字串由後端拒絕；正在等用戶勾選時不逾時，勾選完成後自動送出
+	function ts_token(){
+		ts_init();
+		if(!!ts.token){
+			var t = ts.token; ts.token = "";
+			return Promise.resolve(t);
+		}
+		return new Promise(function(resolve){
+			ts.waiting.push(resolve);
+			setTimeout(function(){
+				if(ts.interactive) return;
+				ts.waiting = ts.waiting.filter(function(f){return f!==resolve;});
+				resolve("");
+			}, 10000);
+		});
+	}
+	// 用過即重新產生
+	function ts_reset(){
+		ts.token = "";
+		if(ts.id!==null) turnstile.reset(ts.id);
+	}
+	// 附帶 Turnstile token 的 hj_update (等待驗證期間重複送出則略過)
+	function hj_update_ts(d){
+		var dfd = $.Deferred();
+		if(hj_update_ts.busy) return dfd.promise();
+		hj_update_ts.busy = true;
+
+		ts_token().then(function(t){
+			d["cf_turnstile"] = t;
+			hj_update(d).always(function(){
+				// 先重新產生 token，供回應後的連續請求使用 (如註冊後自動登入)
+				hj_update_ts.busy = false;
+				ts_reset();
+			}).then(dfd.resolve, dfd.reject);
+		});
+		return dfd.promise();
+	}
+	// 後端回傳 8：Turnstile 驗證未通過
+	function ts_failed(){
+		shake($(".authform"));
+		toast(_h("i-captcha-0"));
+	}
 
 // 登入/註冊切換
 function box(toggle){
@@ -621,24 +714,6 @@ function box(toggle){
 		    $sup.add($sin).hide("slide"); $res.show();
 		    password_show(!1);
 
-			if(!$("#captcha").html()){
-				if(!window.recaptcha){
-					window.recaptcha = function(){
-						var $r = $("#reset");
-						turnstile.render("#captcha", {
-							sitekey: "0x4AAAAAAAAt_P1lgP_qe9nY", 
-							theme: "light", 
-							callback: function(){
-								$r.show();
-							}, 
-							"expired-callback": function(){
-								$r.slideUp();
-							}
-						});
-					};
-				}
-				hj_getScript("//challenges.cloudflare.com/turnstile/v0/api.js?onload=recaptcha&render=explicit");
-			}
 		break;
 	}
 
