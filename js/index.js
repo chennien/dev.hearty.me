@@ -625,6 +625,7 @@ function ts_init(){
 			}, 
 			"error-callback": function(){
 				ts.token = "";
+				ts.interactive = false;
 				ts.waiting.splice(0).forEach(function(f){f("");});
 			}
 		});
@@ -632,7 +633,7 @@ function ts_init(){
 	hj_getScript("//challenges.cloudflare.com/turnstile/v0/api.js?onload=ts_onload&render=explicit");
 }
 	// 取得 token (一次性)
-	// 背景驗證最多等 10 秒，逾時回傳空字串由後端拒絕；正在等用戶勾選時不逾時，勾選完成後自動送出
+	// 背景驗證最多等 10秒，逾時回傳空字串由後端拒絕；正在等用戶勾選時不逾時，勾選完成後自動送出
 	function ts_token(){
 		ts_init();
 		if(!!ts.token){
@@ -651,11 +652,16 @@ function ts_init(){
 	// 用過即重新產生
 	function ts_reset(){
 		ts.token = "";
+		ts.interactive = false;
 		if(ts.id!==null) turnstile.reset(ts.id);
 	}
 	// 附帶 Turnstile token 的 hj_update (等待驗證期間重複送出則略過)
 	function hj_update_ts(d){
 		var dfd = $.Deferred();
+
+		// 需勾選但尚未勾選：彈窗提醒 (送出動作仍保留，勾選完成後自動送出)
+		if(ts.interactive) msg(_h("i-captcha-1"));
+
 		if(hj_update_ts.busy) return dfd.promise();
 		hj_update_ts.busy = true;
 
