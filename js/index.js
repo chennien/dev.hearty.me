@@ -660,7 +660,9 @@ function ts_init(){
 		var dfd = $.Deferred();
 
 		// 需勾選但尚未勾選：彈窗提醒 (送出動作仍保留，勾選完成後自動送出)
-		if(ts.interactive) msg(_h("i-captcha-1"));
+		if(ts.interactive) msg('<i class="fal fa-info-circle"></i> '+_h("i-captcha-1"), "", function(){
+				shake($("#captcha>div"));
+			});
 
 		if(hj_update_ts.busy) return dfd.promise();
 		hj_update_ts.busy = true;
