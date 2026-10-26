@@ -692,7 +692,7 @@ audio::-webkit-media-controls-timeline{
 	background: #ff69b4;
 }
 
-data-tooltip]{
+[data-tooltip]{
 	position: relative;
 	line-height: 1.5;
 }
