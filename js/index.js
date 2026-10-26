@@ -238,55 +238,7 @@ function signin(para){
 	}).then(function(r){
 		switch(r["Status"]){
 			case 1:
-				var val = r["Values"];
-				$("#signin").hide(); $(".loading-bars").show();
-
-				// Cookie 記憶
-				if(!$("a.toggler").hasClass("off")) setcookie("hearty_account", account, 90);
-				else setcookie("hearty_account", "", 90);
-
-				// 登入後跳轉
-				toast(_h("i-signin-1", {$user: account}));
-				$("body").css({cursor: "wait"});
-
-				if(typeof mixpanel!="undefined"){
-					mixpanel.identify(val["user_id"]);
-					mixpanel.people.set({
-						"$username": val["username"], 
-						"$email": val["email"], 
-						"$last_login": new Date()
-					});
-				}
-				ga_evt_push("Sign In", {
-					event_category: "Auth", 
-					event_label: "Sign In"
-				});
-
-				var redirect;
-				if(!!via_API){
-					redirect = Return_URL;
-					redirect += (redirect.indexOf("?")<0?"?":"&")+"Hearty_Signin="+val["token_signin"]; // 網址帶 Token 參數
-			    	location.assign(redirect);
-				}
-				else if(!!getUrlPara("r")){
-					location.assign(htmlspecialchars(getUrlPara("r")).replace("？", "?").replace(/＆/g, "&"));
-				}
-				else{
-					switch(para){
-						case "first": // 需要導覽
-							redirect = "/"+val["username"]+"?first=1";
-						break;
-						
-						case "profile": // 導至 profile
-							redirect = "/account?pc=1";
-						break;
-
-						default:
-							redirect = "/"+val["username"];
-						break;
-					}
-					location.assign(redirect);
-				}
+				signin_success(r["Values"], account, para);
 			break;
 
 			case 2:
@@ -315,6 +267,57 @@ function signin(para){
 		msg();
 	});
 }
+	// 登入成功 (登入、註冊後直接登入共用)：記憶帳號、事件追蹤並跳轉
+	function signin_success(val, account, para){
+		$("#signin").hide(); $(".loading-bars").show();
+
+		// Cookie 記憶
+		if(!$("a.toggler").hasClass("off")) setcookie("hearty_account", account, 90);
+		else setcookie("hearty_account", "", 90);
+
+		// 登入後跳轉
+		toast(_h("i-signin-1", {$user: account}));
+		$("body").css({cursor: "wait"});
+
+		if(typeof mixpanel!="undefined"){
+			mixpanel.identify(val["user_id"]);
+			mixpanel.people.set({
+				"$username": val["username"], 
+				"$email": val["email"], 
+				"$last_login": new Date()
+			});
+		}
+		ga_evt_push("Sign In", {
+			event_category: "Auth", 
+			event_label: "Sign In"
+		});
+
+		var redirect;
+		if(!!window.via_API){
+			redirect = Return_URL;
+			redirect += (redirect.indexOf("?")<0?"?":"&")+"Hearty_Signin="+val["token_signin"]; // 網址帶 Token 參數
+	    	location.assign(redirect);
+		}
+		else if(!!getUrlPara("r")){
+			location.assign(htmlspecialchars(getUrlPara("r")).replace("？", "?").replace(/＆/g, "&"));
+		}
+		else{
+			switch(para){
+				case "first": // 需要導覽
+					redirect = "/"+val["username"]+"?first=1";
+				break;
+
+				case "profile": // 導至 profile
+					redirect = "/account?pc=1";
+				break;
+
+				default:
+					redirect = "/"+val["username"];
+				break;
+			}
+			location.assign(redirect);
+		}
+	}
 	function signin_viaapi(client){
 		if(!!client){
 			$(function(){
@@ -449,7 +452,12 @@ function signup(){
 			language: $(".language").val()||0, 
 			timezone: timezone, 
 			referrer: referrer, 
-			referral: referral
+			referral: referral, 
+			// 註冊成功即直接登入，登入紀錄所需資料同 signin()
+			ip: $("body").attr("data-ip") || "", 
+			cc: $("body").attr("data-cc") || "", 
+			app: +(!!check_hjapp() || check_hjpwa()), 
+			via_API: !!window.via_API
 		}).then(function(r){
 			switch(r["Status"]){
 				case 0:
@@ -468,7 +476,7 @@ function signup(){
 					}
 
 					$("a.toggler").removeClass("off");
-					box("signin"); signin("first");
+					box("signin");
 
 					if(typeof mixpanel!="undefined"){
 						mixpanel.identify(val["user_id"]);
@@ -487,6 +495,11 @@ function signup(){
 					oa_evt_push("registration_completed", "customer_action");
 					ln_evt_push("CompleteRegistration");
 					ga_evt_push("conversion", {send_to: "AW-1027812032/VU59COmFmNIBEMDVjOoD"});
+
+					// 後端已直接登入：稍候再跳轉，讓上方轉換事件送出
+					setTimeout(function(){
+						signin_success(val, account, "first");
+					}, 500);
 				break;
 
 				case 2:
