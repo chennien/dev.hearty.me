@@ -904,11 +904,11 @@ function export_journal(){
 				return false;
 			}
 
-			let fmt = "docx";
+			let fmt = "txt";
 			alertify.set({labels: {ok: _h("a-dl_fmt-3"), cancel: _h("a-no")}, buttonReverse: false});
 			alertify.confirm('<i class="far fa-briefcase"></i> '+_h("a-dl_fmt-0")+
-				'<label style="display:block;margin-top:.8em;cursor:pointer"><input type="radio" name="export_fmt" value="docx" checked> <i class="far fa-file-word"></i> '+_h("a-dl_fmt-2")+"</label>"+
-				'<label style="display:block;margin-top:.4em;cursor:pointer"><input type="radio" name="export_fmt" value="txt"> <i class="far fa-file-alt"></i> '+_h("a-dl_fmt-1")+"</label>", function(e){
+				'<label style="display:block;margin-top:.8em;cursor:pointer"><input type="radio" name="export_fmt" value="txt" checked> <i class="far fa-file-alt"></i> '+_h("a-dl_fmt-1")+"</label>"+
+				'<label style="display:block;margin-top:.4em;cursor:pointer"><input type="radio" name="export_fmt" value="docx"> <i class="far fa-file-word"></i> '+_h("a-dl_fmt-2")+"</label>", function(e){
 				if(!e) return;
 
 				if(fmt=="txt"){
@@ -1067,7 +1067,8 @@ function export_journal(){
 		});
 	}
 	async function export_docx_run(d, handle){
-		let writable = null, 
+		let $b = $("body"), 
+			writable = null, 
 			$p = null, 
 			progress = function(html){
 				html = '<i class="far fa-spinner fa-spin"></i> '+html;
@@ -1084,14 +1085,19 @@ function export_journal(){
 				e.returnValue = "";
 			};
 
-		hj_loading();
+		// 不用 hj_loading()：其 8秒逾時會在匯出途中移除；並清除先前 hj_loading() 排定的移除
+		$b.clearQueue().addClass("loading");
 		progress(_h("a-dl_doc-3"));
 		window.addEventListener("beforeunload", unload);
 
 		try{
 			writable = await handle.createWritable();
 			if(!("fflate" in window)) await hj_getScript_npm("fflate@0.8.2/umd/index.js");
-			if(!("export_doc" in window)) await hj_getScript_gh({path: "js/export_doc.min.js"});
+			if(!("export_doc" in window)) await hj_getScript_gh({
+				repo: "chennien/dev.hearty.me", 
+				commit: "c9646dfdf1217037bbb5a090485e1ac3ec90431c", 
+				path: "js/export_doc.min.js"
+			});
 
 			let r = await export_doc(d, writable, function(done, total){
 				progress(total>0 ? _h("a-dl_doc-2", {"$done": done.toLocaleString(), "$total": total.toLocaleString()}) : _h("a-dl_doc-3"));
@@ -1115,7 +1121,7 @@ function export_journal(){
 		finally{
 			window.removeEventListener("beforeunload", unload);
 			if($p) $p.get(0).click(); // 關閉進度
-			hj_loading(false);
+			$b.removeClass("loading");
 		}
 	}
 
