@@ -77,10 +77,12 @@ async function export_doc(data, writable, on_progress){
 					imgs.push(await jobs[i++].result);
 				}
 
-				let link = null;
+				// 超連結：標題連至該篇日記、YouTube 影片
+				let link = {post: "rIdP"+(++links)};
+				rels.push(doc_link_rel(link.post, "https://hearty.me/"+(parseInt(data["user_id"]) || 0)+"/"+(parseInt(p["post_id"]) || 0)));
 				if(p["youtube"]){
-					link = "rIdL"+(++links);
-					rels.push('<Relationship Id="'+link+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://youtu.be/'+doc_esc(encodeURIComponent(p["youtube"]))+'" TargetMode="External"/>');
+					link.youtube = "rIdY"+links;
+					rels.push(doc_link_rel(link.youtube, "https://youtu.be/"+encodeURIComponent(p["youtube"])));
 				}
 				body.push(docx_post_xml(p, imgs, link));
 			}
@@ -240,12 +242,20 @@ function doc_lang(l){
 	return l[0]+(l[1] ? "-"+l[1].toUpperCase() : "");
 }
 
-// 段落：Tab 轉成 <w:tab/>
-function doc_p(text, style){
+// 段落：Tab 轉成 <w:tab/>；link 為超連結的 rId，以新視窗開啟
+function doc_p(text, style, link, rstyle){
 	let r = (text || "").split("\t").map(function(t){
 		return t ? '<w:t xml:space="preserve">'+doc_esc(t)+"</w:t>" : "";
 	}).join("<w:tab/>");
-	return "<w:p>"+(style ? '<w:pPr><w:pStyle w:val="'+style+'"/></w:pPr>' : "")+(r ? "<w:r>"+r+"</w:r>" : "")+"</w:p>";
+	if(r){
+		r = "<w:r>"+(rstyle ? '<w:rPr><w:rStyle w:val="'+rstyle+'"/></w:rPr>' : "")+r+"</w:r>";
+		if(link) r = '<w:hyperlink r:id="'+link+'" w:tgtFrame="_blank">'+r+"</w:hyperlink>";
+	}
+	return "<w:p>"+(style ? '<w:pPr><w:pStyle w:val="'+style+'"/></w:pPr>' : "")+r+"</w:p>";
+}
+
+function doc_link_rel(id, url){
+	return '<Relationship Id="'+id+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="'+doc_esc(url)+'" TargetMode="External"/>';
 }
 
 function doc_cover(data){
@@ -254,9 +264,9 @@ function doc_cover(data){
 		doc_p(_h("a-dl_doc-8", {"$date": data["exported"], "$posts": data["posts"].length.toLocaleString()}), "Subtitle");
 }
 
-// 單篇日記：標題、日期、內文、相片、YouTube 連結
+// 單篇日記：標題 (連至該篇日記)、日期、內文、相片、YouTube 連結
 function docx_post_xml(p, imgs, link){
-	let x = doc_p(p["title"] || p["date"], "Heading1")+doc_p(p["date"], "Date");
+	let x = doc_p(p["title"] || p["date"], "Heading1", link.post)+doc_p(p["date"], "Date");
 
 	(p["content"] || "").split("\n").forEach(function(line){
 		x += doc_p(line);
@@ -282,8 +292,8 @@ function docx_post_xml(p, imgs, link){
 		"</w:drawing></w:r></w:p>";
 	});
 
-	if(link){
-		x += '<w:p><w:hyperlink r:id="'+link+'"><w:r><w:rPr><w:rStyle w:val="Hyperlink"/></w:rPr><w:t>https://youtu.be/'+doc_esc(p["youtube"])+"</w:t></w:r></w:hyperlink></w:p>";
+	if(link.youtube){
+		x += doc_p("https://youtu.be/"+p["youtube"], "", link.youtube, "Hyperlink");
 	}
 	return x;
 }
