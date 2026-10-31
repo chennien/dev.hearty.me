@@ -743,7 +743,10 @@ function box(toggle){
 		reg = toggle=="signup" ? "/[^a-z0-9]/g" : "/[^a-z0-9_.@-]/g", 
 		oninput = "this.value=(this.value||'').toLowerCase().replace("+reg+",'')";
 
-	$a.trigger("focus").attr({title: title,
+	// 僅在登入框開啟時 focus (authbox 會隱藏 .content)；否則首次開啟、CSS 尚未載入時，focus 會使頁面捲到登入框位置
+	if($(".home_signin").is(":visible") && $(".content").is(":hidden")) $a.trigger("focus");
+
+	$a.attr({title: title,
 		placeholder: title, 
 		maxlength: maxlength, 
 		oninput: oninput
