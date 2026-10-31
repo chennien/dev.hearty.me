@@ -20,7 +20,7 @@ function home_init(){
 		var account = getcookie("hearty_account") || getUrlPara("account") || "";
 		if(!!account){
 			$("#account").val(account); $(".toggler").removeClass("off");
-			$(".toggle_signup").css({color: "#fff", background: "#555"});
+			box("signin");
 		}
 		else{
 			box("signup");
@@ -54,13 +54,13 @@ function home_init(){
 					status = _h("i-email-3"); shake($(".authform"));
 				break;
 			}
-			authbox(true);
+			authbox(true); box("signin");
 			toast(status);
 		}
 		// 來自重設密碼所跳轉
 		else if(!!reset){
 			if(reset=="1"){
-					authbox(true);
+					authbox(true); box("signin");
 					toast(_h("i-reset-1"));
 					$("#account").val(getUrlPara("account") || "");
 					$("#password").val(getUrlPara("token") || "");
