@@ -1142,7 +1142,7 @@ function cover_uploader_init(){
 	function cropper_sdk(callback){
 		callback = callback || function(){};
 
-		if("Cropper" in window) callback;
+		if("Cropper" in window) callback();
 		else hj_getScript_npm("cropperjs@1.6.2/dist/cropper.min.js", callback);
 	}
 	function cover_uploader_crop(){
