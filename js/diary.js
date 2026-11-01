@@ -5838,7 +5838,7 @@ function image_uploader_init(){
 		for(const file of files){
 			let d = new FormData(), 
 				g;
-			d.append("myfile[]", file);
+			d.append("myfile", file);
 			d.append("category", 1);
 			d.append("post_id", current_post()["post_id"]);
 			d.append("privacy", current_post()["privacy"]);
