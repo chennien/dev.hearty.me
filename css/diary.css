@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-@import url(//cdn.jsdelivr.net/combine/gh/heartyme/web.hearty.me@41214/css/jquery.ui.resizable.min.css,npm/cssgram@0.1.3/source/css/cssgram.min.css,npm/slick-carousel@2.0.0/slick/slick.min.css,gh/heartyme/web.hearty.me@41214/css/diary.pagination.min.css,gh/heartyme/web.hearty.me@41214/css/periods.min.css,gh/heartyme/web.hearty.me@305bcf569af234914997ae63e4427eb8ae01620c/css/ytbox.min.css);
+@import url(//cdn.jsdelivr.net/combine/gh/heartyme/web.hearty.me@41214/css/jquery.ui.resizable.min.css,npm/cssgram@0.1.3/source/css/cssgram.min.css,npm/slick-carousel@2.0.0/slick/slick.min.css,gh/heartyme/web.hearty.me@41214/css/diary.pagination.min.css,gh/heartyme/web.hearty.me@41214/css/periods.min.css,gh/heartyme/web.hearty.me@a0517993903c0d7cf05bebe5581f3ac0ad815131/css/ytbox.min.css);
 @import url(//cdn.jsdelivr.net/gh/erikflowers/weather-icons@2.0.10/css/weather-icons.min.css); /* dont use combine */
 
 :root{
@@ -352,31 +352,32 @@ a:active{
 /* D: sticker 層 */
 	.asset .sticker_img{
 		position: relative;
+		margin: .2em .5em; /* 邊界：剪下、黏貼共用，切換時不位移 */
 		transition: margin-left .06s linear, margin-right .06s linear;
 		background-repeat: no-repeat;
 		background-size: contain;
 		background-position: center;
 	}
 	.asset .sticker_static{
-		margin: .2em .5em; /* 邊界 */
 		pointer-events: none; /* Disable Wheel Trigger */
 	}
+	/* 以 outline 取代 border、圖示大小移至 ::after，編輯框與靜態框尺寸一致 */
 	.asset .sticker_editing{
-		border: 3px dashed #888;
-		border-radius: .6em;
-		font-size: 2.5em;
+		outline: 3px dashed #888;
+		outline-offset: -3px;
+		border-radius: 1.5em;
 		filter: contrast(1.1);
-		box-shadow: rgba(0,0,0,.1) 1px 1px 1em 1px;
+		box-shadow: rgba(0,0,0,.1) 1px 1px 2.5em 1px; /* 同原 font-size: 2.5em 下的 1em */
 		cursor: move;
 		cursor: grab;
-		transition: border .2s linear;
+		transition: outline-color .2s linear;
 	}
 	.asset .sticker_editing:hover{
-		border: 3px dotted #999;
+		outline: 3px dotted #999;
 		filter: brightness(1.05);
 	}
 	.asset .sticker_editing.grabbing{
-		border: 3px dashed #999;
+		outline: 3px dashed #999;
 		cursor: move;
 		cursor: grabbing;
 	}
@@ -396,7 +397,7 @@ a:active{
 		align-items: center;
 		justify-content: center;
 		font-family: "Font Awesome 5 Pro";
-		font-size: inherit;
+		font-size: var(--icon-size, 2.5em); /* 手機縮放時由 JS 設定 */
 		width: 100%;
 		height: 100%;
 		top: 0;
