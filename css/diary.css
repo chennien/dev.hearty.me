@@ -307,8 +307,6 @@ a:active{
 	.bundle_right::before{
 		content: '';
 		height: auto;
-	}
-	.bundle_left::before{
 		float: left;
 	}
 	.bundle_right::before{
@@ -481,24 +479,16 @@ a:active{
 		animation: rotatable 2s linear infinite normal;
 	}
 		@keyframes rotatable{
-			from{
-				transform: rotateZ(0deg)
-			}
-			to{
-				transform: rotateZ(360deg)
-			}
+			from{transform: rotateZ(0deg);}
+			to{transform: rotateZ(360deg);}
 		}
 	.ui-rotatable-handle-nw:hover, 
 	.ui-rotatable-handle-sw:hover{
 		animation: rotatable-reverse 2s linear infinite normal;
 	}
 		@keyframes rotatable-reverse{
-			from{
-				transform: rotateY(180deg) rotateZ(0deg)
-			}
-			to{
-				transform: rotateY(180deg) rotateZ(360deg)
-			}
+			from{transform: rotateY(180deg) rotateZ(0deg);}
+			to{transform: rotateY(180deg) rotateZ(360deg);}
 		}
 
 	.ui-rotatable-handle:hover::before{
@@ -533,36 +523,13 @@ a:active{
 	.ui-resizable-handle:hover{
 		background: rgba(255,242,129,.9);
 	}
-	.nwgrip, 
-	.negrip, 
-	.swgrip, 
-	/* .segrip, */
 	.ngrip, 
 	.egrip, 
-	.sgrip, 
-	.wgrip{
+	.sgrip{
 		width: 12px;
 		height: 12px;
 		background: #fff;
 		border: 1px solid #000;
-	}
-	.negrip{
-		top: -6px;
-		right: -6px;
-	}
-	/*
-	.segrip{
-		right: -6px;
-		bottom: -6px;
-	}
-	*/
-	.nwgrip{
-		top: -6px;
-		left: -6px;
-	}
-	.swgrip{
-		left: -6px;
-		bottom: -6px;
 	}
 	.ngrip{
 		top: -6px; 
@@ -571,7 +538,6 @@ a:active{
 	}
 	.egrip{
 		top: 50%;
-		transform: translateY(-50%);
 		right: -6px; 
 		margin-top: -6px;
 	}
@@ -579,12 +545,6 @@ a:active{
 		left: 50%;
 		bottom: -6px;
 		margin-left: -6px;
-	}
-	.wgrip{
-		top: 50%;
-		transform: translateY(-50%);
-		left: -6px;
-		margin-top: -6px;
 	}
 	.detach{
 		position: absolute;
