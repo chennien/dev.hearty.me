@@ -907,7 +907,7 @@ function signin_history(){
 			let cc = d["country"]||"";
 			if(cc.length==2){
 				cc = $("<img>", {
-					src: "//cdn.statically.io/img/flagcdn.com/28x21/"+cc.toLowerCase()+".png",
+					src: "//i0.wp.com/flagcdn.com/28x21/"+cc.toLowerCase()+".png",
 					title: cc
 				});
 			}
