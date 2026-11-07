@@ -4015,7 +4015,7 @@ function post_query(post_id, via_backbtn){
 	}
 
 // 新增文章
-function post_create(pos, $btn){
+function post_create(pos, $btn, gps_prompted){
 	open_book(true);
 	toolbelt_btn_clicked($btn);
 
@@ -4028,33 +4028,22 @@ function post_create(pos, $btn){
 		!/Hearty_macOS\/2\.0\./i.test(navigator.userAgent||"") // 非 macOS 2.0.x 版
 		// !check_hjapp("macOS") // 非 macOS 所有版本
 	 ){
-		gps = JSON.parse(decodeURIComponent(getcookie("hearty_position_gps")) || false);
-		if(!gps && pos && confirm("⛅ "+_h("e-gps-0"))){
-			// 天氣(或未)載入後，新增文章
-			var $positioning_deferred = $.Deferred();
-			$.when($positioning_deferred).then(function(){
-				post_create(false);
-				alertify.success('<i class="fal fa-cloud"></i> '+_h("e-gps-2"));
+		gps = hearty_gps_cache();
+		// 已授權則直接定位；已拒絕則不再詢問
+		if(!gps && pos && hearty_gps_state!="denied" && (hearty_gps_state=="granted" || confirm("⛅ "+_h("e-gps-0")))){
+			// 定位完成或失敗（逾時由 hearty_gps 控制）後，新增文章（天氣由後端查詢）
+			$mask.show();
+			hearty_gps().always(function(){
+				$mask.fadeOut();
+				post_create(false, undefined, true);
 			}).fail(function(){
-				post_create(false);
 				alertify.error('<i class="fal fa-map-marker-alt-slash"></i> '+_h("e-gps-3"));
 
 				if(!is_touch_device() && check_browser("Chrome"))
 					msg('<img src="//i.hearty.app/i/icons/gps_chrome.url.png"><br>'+_h("e-gps-4"));
 			});
 
-			// 抓到天氣
-			$.when(window.positioning_gps_deferred).done(function(){
-				$positioning_deferred.resolve();
-			}); positioning_gps_trigger(!0);
-
-			// 未取得天氣 fallback
-			$mask.show().delay(5000).queue(function(){
-				$positioning_deferred.reject();
-				$(this).fadeOut().dequeue();
-			});
-
-			msg("⛅ "+_h("e-gps-1"));
+			if(hearty_gps_state!="granted") msg("⛅ "+_h("e-gps-1"));
 			return;
 		}
 	}
@@ -4068,9 +4057,7 @@ function post_create(pos, $btn){
 		action: "post_create", 
 		title: title, 
 		location_lat: gps["latitude"]||"", 
-		location_lon: gps["longitude"]||"", 
-		place: gps["address"]||"", 
-		weather_id: gps["weather_id"]||""
+		location_lon: gps["longitude"]||""
 	}).then(function(r){
 		switch(r["Status"]){
 			case 1:
@@ -4079,6 +4066,10 @@ function post_create(pos, $btn){
 
 				r = r["Values"];
 				var post_id = r["post_id"];
+
+				// 經詢問而開啟定位，且後端查得天氣
+				if(gps_prompted && r["weather_id"])
+					alertify.success('<i class="fal fa-cloud"></i> '+_h("e-gps-2"));
 
 				$("<li>", {
 					title: "📝 "+title, 
