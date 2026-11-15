@@ -552,9 +552,11 @@ function ga_evt_push(evt, val){
 	function fa_evt_push(evt, val){
 		// cdn.jsdelivr.net/npm/firebase@13.2.0/firebase-analytics-compat.js
 		try{
-			// Android
-			if(window.hj_AnalyticsWebInterface) 
-				window.hj_AnalyticsWebInterface.logEvent(evt, JSON.stringify(val));
+			// Android（WebMessageListener，僅 hearty.me 網域注入；舊版 App 無 postMessage，自動略過）
+			if(window.hj_AnalyticsWebInterface && typeof window.hj_AnalyticsWebInterface.postMessage=="function")
+				window.hj_AnalyticsWebInterface.postMessage(JSON.stringify({
+					command: "logEvent", name: evt, parameters: val || {}
+				}));
 
 			// iOS
 			else if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.hj_AnalyticsWebInterface) 
@@ -1191,9 +1193,12 @@ function hj_version_gte(v, min){
 	}
 	return true;
 }
-// App 原生橋接 (Android: window.hj_PasskeyInterface; iOS: webkit.messageHandlers.hj_PasskeyInterface)
+// App 原生橋接 (Android: window.hj_PasskeyInterface (WebMessageListener); iOS: webkit.messageHandlers.hj_PasskeyInterface)
+// 兩者都只在 hearty.me 網域注入；Android 須有 postMessage（舊版 App 無此介面）
 function hj_passkey_bridge(){
-	return window.hj_PasskeyInterface || (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.hj_PasskeyInterface) || null;
+	let a = window.hj_PasskeyInterface;
+	if(a && typeof a.postMessage=="function") return a;
+	return (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.hj_PasskeyInterface) || null;
 }
 // 是否可使用 Passkey：頁面須輸出 passkey_enabled；手機 App 須 >= PASSKEY_APP_MIN_VERSION；macOS App 暫不支援
 function hj_passkey_supported(){
@@ -1284,7 +1289,11 @@ function hj_passkey_create(o){
 		}
 		return j;
 	}
-	// App 原生橋接：App 完成後呼叫 hj_passkey_callback(callbackId, {ok, credential | error})
+	// App 原生橋接（postMessage）：
+	// 送出 {command:"get"|"create", request:<options JSON 字串>, callbackId}
+	// 回覆 {callbackId, ok:true, credential:<WebAuthn JSON>} 或 {callbackId, ok:false, error:"NotAllowedError"|...}
+	// - Android：postMessage 須傳字串，回覆經 hj_PasskeyInterface.onmessage
+	// - iOS：WKScriptMessageHandlerWithReply，postMessage 回傳 Promise
 	var hj_passkey_callbacks = {};
 	function hj_passkey_native(command, request){
 		return new Promise(function(resolve, reject){
@@ -1302,8 +1311,31 @@ function hj_passkey_create(o){
 				else reject(new DOMException("", (r && r.error) || "NotAllowedError"));
 			};
 			try{
-				if(window.hj_PasskeyInterface) window.hj_PasskeyInterface[command](json, id);
-				else window.webkit.messageHandlers.hj_PasskeyInterface.postMessage({command: command, request: json, callbackId: id});
+				let msg = {command: command, request: json, callbackId: id},
+					a = window.hj_PasskeyInterface;
+				// Android
+				if(a && typeof a.postMessage=="function"){
+					a.onmessage = function(e){
+						let r;
+						try{
+							r = JSON.parse(e.data);
+						}
+						catch(err){
+							return;
+						}
+						if(r && r.callbackId) hj_passkey_callback(r.callbackId, r);
+					};
+					a.postMessage(JSON.stringify(msg));
+				}
+				// iOS
+				else{
+					let p = window.webkit.messageHandlers.hj_PasskeyInterface.postMessage(msg);
+					if(p && typeof p.then=="function") p.then(function(r){
+						hj_passkey_callback(id, r);
+					}, function(){
+						hj_passkey_callback(id, {ok: false, error: "NotAllowedError"});
+					});
+				}
 			}
 			catch(e){
 				delete hj_passkey_callbacks[id];
