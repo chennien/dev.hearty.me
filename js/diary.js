@@ -242,7 +242,7 @@ function whats_your_name(name){
 				$(".hj_user .name").attr("data-text", name);
 				alertify.set({labels: {ok: '<i class="fas fa-check-circle"></i> '+_h("e-name-4"), cancel: _h("e-no-0")}, buttonReverse: false});
 				alertify.confirm('<i class="far fa-flower"></i> '+_h("e-name-2", {$name: name})+"<br>"+_h("e-name-3"), function(e){
-					if(e) hj_fcm_init();
+					if(e) hj_fcm_init(null, true); // 使用者主動同意，不受頻率限制
 					free_trial_activate();
 				});
 			}

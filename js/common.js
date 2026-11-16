@@ -966,10 +966,29 @@ function hj_firebase_init(){
 	}
 }
 
-function hj_fcm_init(onfinish){
+// Android App：是否該再次呼叫 /wv?r=pushnotification（localStorage: hearty_app_push = {u: 帳號, t: 時間戳}，2 天）
+function hj_app_push_due(){
+	const bucket = "hearty_app_push", interval = 2*24*60*60*1000, now = Date.now(), u = window.hj_username || "";
+	try{
+		let last = JSON.parse(localStorage.getItem(bucket) || "null");
+		if(last && last.u==u && now-last.t<interval) return false;
+		localStorage.setItem(bucket, JSON.stringify({u: u, t: now}));
+	}
+	catch(e){}
+	return true;
+}
+
+// force：使用者主動同意開啟通知時傳 true，不受 Android App 的詢問頻率限制
+function hj_fcm_init(onfinish, force){
 	onfinish = onfinish || function(){};
 
 	if(/iOS|Android/i.test(check_hjapp())){
+		// Android App 每次收到都會照實詢問通知權限（未授權時跳系統對話框或引導至設定），由網頁端避免重複打擾：
+		// 自動觸發（如每次打開通知面板）時，同一帳號 2 天內只呼叫一次；換帳號時照常呼叫，以重新綁定 FCM token
+		if(check_hjapp("Android") && !force && !hj_app_push_due()){
+			onfinish();
+			return;
+		}
 		location.assign("//hearty.me/wv?r=pushnotification"+(!window.hj_username ? "" : "&username="+hj_username));
 		onfinish();
 	}
