@@ -170,6 +170,17 @@ function hj_firstrun(){
 		hj_tutorial("init");
 	}
 }
+	function slick_wheel(e){ // 滾輪切換 slick：一次滾動只切一張（滾輪／觸控板慣性會連續送出大量 wheel 事件）
+		e.preventDefault();
+		var $s = $(this), 
+			dy = e.originalEvent.deltaY;
+		clearTimeout($s.data("wheel_timer"));
+		$s.data("wheel_timer", setTimeout(function(){
+			$s.removeData("wheel_lock");
+		}, 250)); // 停止滾動 250ms 後才解鎖
+		if($s.data("wheel_lock") || !dy) return;
+		$s.data("wheel_lock", true).slick("slick"+(dy<0 ? "Next" : "Prev"));
+	}
 	function hj_tutorial(action){
 		var $s = $(".tutorial_slider");
 		if(!$s.length) return false;
@@ -196,13 +207,7 @@ function hj_firstrun(){
 					nextArrow: '<div class="tutorial_arrow fal fa-chevron-right" onclick="hj_tutorial(\'forward\')"></div>'
 				}).on("edge", function(){
 					hj_tutorial("finish");
-				}).on("wheel", function(e){ // 滾輪
-					e.preventDefault();
-					$(this).slick("slick"+(
-						e.originalEvent.deltaY<0 ? 
-						"Next" : "Prev"
-					));
-				});
+				}).on("wheel", slick_wheel);
 				$s.find("img").on("click", function(){
 					hj_tutorial("next");
 				});
@@ -3826,13 +3831,7 @@ function post_query(post_id, via_backbtn){
 					$(this).find(".dots").on("click", function(e){
 						e.stopPropagation();
 					});
-				}).on("wheel", function(e){ // 滾輪
-					e.preventDefault();
-					$(this).slick("slick"+(
-						e.originalEvent.deltaY<0 ? 
-						"Next" : "Prev"
-					));
-				}).on("afterChange", function(){
+				}).on("wheel", slick_wheel).on("afterChange", function(){
 					$(this).slick("slickPause");
 				}).find(".dots").on("click", function(e){
 					e.stopPropagation();
@@ -5053,7 +5052,8 @@ function pricing_giap(){
 	) return;
 
 	try{
-		let plan_id = "sub-1m", // base_plan
+		let product_id = "hearty_vip", // 與結帳 wv?r=iap 的 product_id 一致；App 不再預設
+			plan_id = "sub-1m", // base_plan
 			req_id = "giap_"+Date.now();
 
 		hj_IapInterface.onmessage = function(e){
@@ -5068,7 +5068,7 @@ function pricing_giap(){
 			catch(err){}
 		};
 		hj_IapInterface.postMessage(JSON.stringify({
-			command: "getIapPrice", plan_id: plan_id, id: req_id
+			command: "getIapPrice", product_id: product_id, plan_id: plan_id, id: req_id
 		}));
 
 		/* App 端回傳（非同步，經 onmessage）：
