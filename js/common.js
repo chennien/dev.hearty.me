@@ -692,15 +692,16 @@ function hj_lang(){
 	}
 	// 語言索引 (同 libs/languages.php)
 	function hj_lang_index(locale){
-		let langs = ["en-us", "zh-tw", "zh-cn", "es-es", "id-id", "pt-pt", "ja-jp", "ru-ru", "fr-fr", "de-de", "tr-tr", "vi-vn", "ko-kr", "th-th", "it-it", "pl-pl", "uk-ua", "nl-nl", "ro-ro", "sw-ke", "el-gr"];
+		let langs = ["en-us", "zh-tw", "zh-cn", "es-es", "id-id", "pt-pt", "ja-jp", "ru-ru", "fr-fr", "de-de", "tr-tr", "vi-vn", "ko-kr", "th-th", "it-it", "pl-pl", "uk-ua", "nl-nl", "ro-ro", "sw-ke", "el-gr", "hi-in", "bn-bd", "fil-ph", "ms-my", "cs-cz", "mr-in", "te-in", "ta-in", "hu-hu", "sv-se", "ha-ng", "my-mm", "am-et", "da-dk", "fi-fi", "nb-no", "sk-sk", "bg-bg"];
 		locale = (locale || navigator.language || "").toLowerCase();
 
 		// 中文：簡體 zh-cn，其餘 zh-tw
 		if(/^zh\b/.test(locale)) return /^zh-(cn|sg|my|hans)/.test(locale) ? 2 : 1;
 
-		// 完全相符，否則比對主語言碼
+		// 完全相符，否則比對主語言碼 (別名：tl→fil、no/nn→nb)
 		let i = langs.indexOf(locale);
-		if(i<0) i = langs.findIndex(l => l.split("-")[0]==locale.split("-")[0]);
+		let primary = {tl: "fil", no: "nb", nn: "nb"}[locale.split("-")[0]] || locale.split("-")[0];
+		if(i<0) i = langs.findIndex(l => l.split("-")[0]==primary);
 		return i<0 ? 0 : i;
 	}
 
