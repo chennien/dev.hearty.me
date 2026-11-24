@@ -492,10 +492,8 @@ function newsletter(optin){
 }
 
 // 本機每日提醒（雙平台本機每日提醒.md）：App 收到 /wv?r=reminder 後自行排程，不經伺服器
-// 第一階段不開放（REMINDER_OPEN=false）：先讓新版 App 累積 FCM topic nightly 的訂閱；
-// 第二階段改為 true，同時把每晚的全體推播改發 topic nightly
-const REMINDER_OPEN = false,
-	REMINDER_BUCKET = "hearty_app_reminder",
+// 支援的 App 版本會顯示 #reminder 列（第一階段由 account.php 自行隱藏）
+const REMINDER_BUCKET = "hearty_app_reminder",
 	REMINDER_TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 // App 2.611.39 起支援；Android 2.611.39 (106) 已發布但沒有這項功能，須 build 107 以上
 function reminder_supported(){
@@ -507,7 +505,7 @@ function reminder_supported(){
 	return false;
 }
 function reminder_init(){
-	if(!REMINDER_OPEN || !reminder_supported()) return;
+	if(!reminder_supported()) return;
 	let r = reminder_load();
 	$("#reminder_on").prop("checked", r.on);
 	$("#reminder_time").val(r.time);
