@@ -495,14 +495,9 @@ function newsletter(optin){
 // 支援的 App 版本會顯示 #reminder 列（第一階段由 account.php 自行隱藏）
 const REMINDER_BUCKET = "hearty_app_reminder",
 	REMINDER_TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
-// App 2.611.39 起支援；Android 2.611.39 (106) 已發布但沒有這項功能，須 build 107 以上
+// App 2.611.39 起支援
 function reminder_supported(){
-	let v = hj_app_version();
-	switch(check_hjapp()){
-		case "iOS": return hj_version_gte(v, "2.611.39");
-		case "Android": return hj_version_gte(v, "2.611.39.107");
-	}
-	return false;
+	return !!check_hjapp() && hj_version_gte(hj_app_version(), "2.611.39");
 }
 function reminder_init(){
 	if(!reminder_supported()) return;
