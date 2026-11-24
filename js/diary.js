@@ -83,6 +83,9 @@ function URL_handling(){
 	// Purchased
 	else if(!!getUrlPara("purchased") || !!getUrlPara("iap")) hj_after_purchase();
 
+	// 寫新日記（App 主畫面捷徑：hearty://d?new=1）
+	else if(!!getUrlPara("new")) post_create();
+
 	// Add Images
 	else if(!!getUrlPara("img")) post_create().then(function(){post_picture(true);});
 
