@@ -30,6 +30,7 @@ function account_init(){
 	birthday_init();
 	uploader_init();
 	passkey_init();
+	reminder_init();
 	account_area_calc();
 	account_stats();
 	language_edit();
@@ -488,6 +489,60 @@ function newsletter(optin){
 	profile_update("newsletter", optin, function(){
 		alertify.success('<i class="fal fa-mailbox"></i> '+_h("a-newsletter_edited"));
 	});
+}
+
+// 本機每日提醒（雙平台本機每日提醒.md）：App 收到 /wv?r=reminder 後自行排程，不經伺服器
+// 第一階段不開放（REMINDER_OPEN=false）：先讓新版 App 累積 FCM topic nightly 的訂閱；
+// 第二階段改為 true，同時把每晚的全體推播改發 topic nightly
+const REMINDER_OPEN = false,
+	REMINDER_BUCKET = "hearty_app_reminder",
+	REMINDER_TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+// App 2.611.39 起支援；Android 2.611.39 (106) 已發布但沒有這項功能，須 build 107 以上
+function reminder_supported(){
+	let v = hj_app_version();
+	switch(check_hjapp()){
+		case "iOS": return hj_version_gte(v, "2.611.39");
+		case "Android": return hj_version_gte(v, "2.611.39.107");
+	}
+	return false;
+}
+function reminder_init(){
+	if(!REMINDER_OPEN || !reminder_supported()) return;
+	let r = reminder_load();
+	$("#reminder_on").prop("checked", r.on);
+	$("#reminder_time").val(r.time);
+	$("#reminder").show();
+}
+	// 設定存在本機（localStorage: hearty_app_reminder = {on, time}），提醒屬於這台裝置
+	function reminder_load(){
+		let r = {};
+		try{
+			r = JSON.parse(localStorage.getItem(REMINDER_BUCKET)) || {};
+		}
+		catch(e){}
+		return {
+			on: !!r.on,
+			time: REMINDER_TIME.test(r.time) ? r.time : "21:30"
+		};
+	}
+	function reminder_save(r){
+		try{
+			localStorage.setItem(REMINDER_BUCKET, JSON.stringify(r));
+		}
+		catch(e){}
+	}
+// 勾選、取消勾選或修改時間
+function reminder_edit(){
+	let on = $("#reminder_on").prop("checked"),
+		time = $("#reminder_time").val();
+	if(!REMINDER_TIME.test(time)) return;
+	let prev = reminder_load();
+	reminder_save({on: on, time: time});
+	// 未開啟時只改時間：先記住，開啟時才通知 App
+	if(!on && !prev.on) return;
+	ga_profile("Reminder");
+	if(on) alertify.success('<i class="fal fa-bell"></i> '+_h("a-reminder_set", {"%t": time}));
+	location.assign("//hearty.me/wv?r=reminder&"+(on ? "time="+time : "off=1"));
 }
 
 function phone_verification($e){
