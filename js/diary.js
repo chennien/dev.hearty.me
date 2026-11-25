@@ -4154,6 +4154,9 @@ function post_revise(retry){
 					url: "//hearty.me/signout", 
 					type: "GET", 
 					async: true
+				}).always(function(){
+					// App 內：解除推播與帳號的綁定並清網頁快取
+					if(/iOS|Android/i.test(check_hjapp())) location.assign("//hearty.me/wv?r=pushunregister&clearcache");
 				});
 			});
 

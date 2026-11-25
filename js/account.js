@@ -535,7 +535,7 @@ function reminder_edit(){
 	if(!on && !prev.on) return;
 	ga_profile("Reminder");
 	if(on) alertify.success('<i class="fal fa-bell"></i> '+_h("a-reminder_set", {"%t": time}));
-	location.assign("//hearty.me/wv?r=reminder&"+(on ? "time="+time : "off=1"));
+	location.assign("//hearty.me/wv?r=reminder&"+(on ? "time="+time : "off"));
 }
 
 function phone_verification($e){
