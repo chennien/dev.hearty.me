@@ -1228,10 +1228,11 @@ function hj_passkey_supported(){
 	if(app && !hj_version_gte(hj_app_version(), window.PASSKEY_APP_MIN_VERSION || "999")) return false;
 	return !!hj_passkey_bridge() || !!window.PublicKeyCredential;
 }
-// 瀏覽器支援自動填入 (Conditional UI)；App 內不啟用
+// 支援自動填入 (Conditional UI)：瀏覽器與 App 皆由 isConditionalMediationAvailable() 判斷
+// App 內：Android 2.611.47+ 開啟 WebView 的 WebAuthn、iOS 依 WKWebView 支援；不支援時回傳 false，登入框照舊
 function hj_passkey_conditional_available(){
 	let pk = window.PublicKeyCredential;
-	if(!hj_passkey_supported() || check_hjapp() || !pk || typeof pk.isConditionalMediationAvailable!="function") return Promise.resolve(false);
+	if(!hj_passkey_supported() || !pk || typeof pk.isConditionalMediationAvailable!="function") return Promise.resolve(false);
 	return pk.isConditionalMediationAvailable().catch(function(){ return false; });
 }
 
