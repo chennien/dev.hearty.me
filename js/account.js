@@ -29,6 +29,7 @@ function account_init(){
 
 	birthday_init();
 	uploader_init();
+	applock_init();
 	passkey_init();
 	reminder_init();
 	account_area_calc();
@@ -495,9 +496,9 @@ function newsletter(optin){
 // 支援的 App 版本會顯示 #reminder 列（第一階段由 account.php 自行隱藏）
 const REMINDER_BUCKET = "hearty_app_reminder",
 	REMINDER_TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
-// App 2.611.39 起支援
+// App 2.611.41 起支援
 function reminder_supported(){
-	return !!check_hjapp() && hj_version_gte(hj_app_version(), "2.611.39");
+	return !!check_hjapp() && hj_version_gte(hj_app_version(), "2.611.41");
 }
 function reminder_init(){
 	if(!reminder_supported()) return;
@@ -1156,6 +1157,100 @@ function hj_preview(o, url){
 
 // Passkey 管理 (plans/passkey-web.md)：查看、新增、改名、刪除
 var passkey_data = {};
+// App 生物辨識鎖：App 注入 hj_AppLockInterface 才顯示 #applock 列 (舊版 App、網頁、macOS App 不顯示)
+// 送出 {command:"status"|"enable"|"disable", callbackId}
+// 回覆 {callbackId, ok, enabled, available, type:"faceID"|"touchID"|"opticID"|"biometric"|"passcode"|"none", error?}
+// - Android：postMessage 須傳字串，回覆經 hj_AppLockInterface.onmessage
+// - iOS：WKScriptMessageHandlerWithReply，postMessage 回傳 Promise
+// 設定以 App 為準 (屬於這台裝置)，不存網頁端
+function applock_bridge(){
+	let a = window.hj_AppLockInterface;
+	if(a && typeof a.postMessage=="function") return a;
+	return (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.hj_AppLockInterface) || null;
+}
+var applock_callbacks = {};
+function applock_native(command){
+	return new Promise(function(resolve){
+		let id = "al"+Date.now()+Math.random().toString(36).slice(2),
+			a = applock_bridge();
+		applock_callbacks[id] = function(r){
+			delete applock_callbacks[id];
+			try{
+				if(typeof r=="string") r = JSON.parse(r);
+			}
+			catch(e){
+				r = null;
+			}
+			resolve(r || {ok: false, error: "NotAllowedError"});
+		};
+		try{
+			let msg = {command: command, callbackId: id};
+			// Android
+			if(a===window.hj_AppLockInterface){
+				a.onmessage = function(e){
+					let r;
+					try{
+						r = JSON.parse(e.data);
+					}
+					catch(err){
+						return;
+					}
+					if(r && r.callbackId && applock_callbacks[r.callbackId]) applock_callbacks[r.callbackId](r);
+				};
+				a.postMessage(JSON.stringify(msg));
+			}
+			// iOS
+			else{
+				let p = a.postMessage(msg);
+				if(p && typeof p.then=="function") p.then(function(r){
+					if(applock_callbacks[id]) applock_callbacks[id](r);
+				}, function(){
+					if(applock_callbacks[id]) applock_callbacks[id]({ok: false, error: "NotAllowedError"});
+				});
+			}
+		}
+		catch(e){
+			if(applock_callbacks[id]) applock_callbacks[id]({ok: false, error: "NotAllowedError"});
+		}
+	});
+}
+function applock_init(){
+	if(!applock_bridge()) return;
+	applock_native("status").then(function(r){
+		// 裝置未設定螢幕鎖定、也未開啟：不顯示
+		if(!r.ok || !(r.available || r.enabled)) return;
+		applock_render(r);
+		$("#applock").show();
+	});
+}
+	// 勾選狀態一律以 App 回覆為準；說明文字依解鎖方式 (Face ID、Touch ID、指紋或臉部、裝置密碼)
+	function applock_render(r){
+		let type = {faceID: 5, touchID: 6, opticID: 7, biometric: 8, passcode: 9}[r.type];
+		$("#applock_on").prop("checked", !!r.enabled);
+		$("[data-applock-label]").text(type ? _h("a-applock-1", {"%t": _h("a-applock-"+type)}) : _h("a-applock-0"));
+	}
+// 勾選：App 先驗證，通過才開啟；取消勾選：直接關閉
+function applock_edit(el){
+	if(applock_edit.busy){
+		el.checked = !el.checked;
+		return;
+	}
+	let on = el.checked;
+	applock_edit.busy = true;
+	applock_native(on ? "enable" : "disable").then(function(r){
+		applock_render(r);
+		if(r.ok){
+			ga_profile("AppLock");
+			alertify.success('<i class="far fa-'+(r.enabled ? "lock" : "lock-open")+'"></i> '+_h("a-applock-"+(r.enabled ? 2 : 3)));
+		}
+		else if(r.error=="NotAvailable") msg('<i class="far fa-info-circle"></i> '+_h("a-applock-4"));
+		// 取消 (Cancelled) 不提示，勾選已回復
+		else if(r.error!="Cancelled") msg();
+	}).finally(function(){
+		applock_edit.busy = false;
+	});
+}
+
 function passkey_init(){
 	if(!window.passkey_enabled) return;
 	$("[data-passkey-add]").toggle(hj_passkey_supported());
